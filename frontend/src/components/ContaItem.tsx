@@ -46,8 +46,13 @@ export function ContaItem({ conta, onUpdate, onDelete, onEdit }: Props) {
       status: editData.status || "pendente",
     };
 
-    if (editData.inicio_periodo) payload.inicio_periodo = editData.inicio_periodo;
-    if (editData.fim_periodo) payload.fim_periodo = editData.fim_periodo;
+    if (editData.inicio_periodo && editData.inicio_periodo.trim() !== "")
+      payload.inicio_periodo = editData.inicio_periodo;
+
+    if (editData.fim_periodo && editData.fim_periodo.trim() !== "")
+      payload.fim_periodo = editData.fim_periodo;
+
+    console.log("Enviando payload corrigido:", payload);
 
     onUpdate(id, payload);
     setShowEditModal(false);
