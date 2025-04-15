@@ -64,20 +64,17 @@ export function ContaItem({ conta, onUpdate, onDelete, onEdit }: Props) {
       </div>
       <div className="space-x-2 flex">
         <button
-          className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700"
+          className={`${
+            status === "paga" ? "bg-yellow-500 hover:bg-yellow-600" : "bg-green-600 hover:bg-green-700"
+          } text-white px-3 py-1 rounded`}
           onClick={() =>
             onUpdate(id, {
-              descricao,
-              valor,
-              vencimento,
-              recorrente: conta.recorrente,
-              inicio_periodo: conta.inicio_periodo,
-              fim_periodo: conta.fim_periodo,
-              status: "paga",
+              ...conta,
+              status: status === "paga" ? "pendente" : "paga",
             })
           }
         >
-          Marcar Pago
+          {status === "paga" ? "Marcar como Pendente" : "Marcar como Pago"}
         </button>
         <button
           className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
