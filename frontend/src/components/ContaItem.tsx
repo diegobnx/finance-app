@@ -13,7 +13,7 @@ export function ContaItem({ conta, onUpdate, onDelete, onEdit }: Props) {
   const [showEditModal, setShowEditModal] = useState(false);
   const [editData, setEditData] = useState<ContaCreate>({
     descricao: "",
-    valor: 0,
+    valor: "0",
     vencimento: "",
     recorrente: false,
     inicio_periodo: "",
@@ -24,7 +24,7 @@ export function ContaItem({ conta, onUpdate, onDelete, onEdit }: Props) {
   const handleEdit = () => {
     setEditData({
       descricao: conta.descricao,
-      valor: conta.valor,
+      valor: conta.valor.toString().replace('.', ','),
       vencimento: new Date(conta.vencimento).toISOString().split("T")[0],
       recorrente: conta.recorrente,
       inicio_periodo: conta.inicio_periodo,
@@ -36,11 +36,11 @@ export function ContaItem({ conta, onUpdate, onDelete, onEdit }: Props) {
   };
 
   const handleSave = () => {
-    if (!editData.descricao || !editData.vencimento || editData.valor <= 0) return;
+    if (!editData.descricao || !editData.vencimento || Number(editData.valor.replace(",", ".")) <= 0) return;
 
     onUpdate(id, {
       descricao: editData.descricao,
-      valor: Number(editData.valor.toString().replace(',', '.')),
+      valor: Number(editData.valor.replace(",", ".")),
       vencimento: new Date(editData.vencimento).toISOString().split("T")[0],
       recorrente: editData.recorrente,
       inicio_periodo: editData.inicio_periodo,
@@ -54,7 +54,7 @@ export function ContaItem({ conta, onUpdate, onDelete, onEdit }: Props) {
     if (showEditModal) {
       setEditData({
         descricao: conta.descricao,
-        valor: conta.valor,
+        valor: conta.valor.toString().replace('.', ','),
         vencimento: new Date(conta.vencimento).toISOString().split("T")[0],
         recorrente: conta.recorrente,
         inicio_periodo: conta.inicio_periodo,
@@ -136,9 +136,13 @@ export function ContaItem({ conta, onUpdate, onDelete, onEdit }: Props) {
               className="border p-2 w-full mb-2"
             />
             <input
-              type="number"
-              value={editData.valor.toString()}
-              onChange={(e) => setEditData({ ...editData, valor: Number(e.target.value) })}
+              type="text"
+              value={editData.valor}
+              onChange={(e) => {
+                let raw = e.target.value.replace(/[^\d]/g, "");
+                let formatted = (Number(raw) / 100).toFixed(2).replace(".", ",");
+                setEditData({ ...editData, valor: formatted });
+              }}
               placeholder="Valor"
               className="border p-2 w-full mb-2"
             />
