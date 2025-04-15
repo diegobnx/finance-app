@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import React from "react";
 import { ContaCreate } from "../types/conta";
 
@@ -22,6 +22,12 @@ export function ContaForm({ onSubmit, formData, isEditing }: Props) {
           status: "pendente"
         }
   );
+
+  React.useEffect(() => {
+    if (isEditing && formData) {
+      setForm(formData);
+    }
+  }, [formData, isEditing]);
 
   const formatarMoeda = (valor: string) => {
     const numerico = valor.replace(/\D/g, "");
