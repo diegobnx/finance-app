@@ -38,15 +38,18 @@ export function ContaItem({ conta, onUpdate, onDelete, onEdit }: Props) {
   const handleSave = () => {
     if (!editData.descricao || !editData.vencimento || Number(editData.valor.replace(",", ".")) <= 0) return;
 
-    onUpdate(id, {
+    const payload: any = {
       descricao: editData.descricao,
       valor: Number(editData.valor.replace(",", ".")),
       vencimento: new Date(editData.vencimento).toISOString().split("T")[0],
       recorrente: editData.recorrente,
-      inicio_periodo: editData.inicio_periodo,
-      fim_periodo: editData.fim_periodo,
       status: editData.status || "pendente",
-    });
+    };
+
+    if (editData.inicio_periodo) payload.inicio_periodo = editData.inicio_periodo;
+    if (editData.fim_periodo) payload.fim_periodo = editData.fim_periodo;
+
+    onUpdate(id, payload);
     setShowEditModal(false);
   };
 
