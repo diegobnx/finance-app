@@ -6,12 +6,22 @@ interface Props {
   onUpdate: (id: string, data: ContaCreate) => void;
   onDelete: (id: string) => void;
   onEdit: (conta: Conta) => void;
+  setContaForm: (conta: ContaCreate) => void;
 }
 
-export function ContaItem({ conta, onUpdate, onDelete, onEdit }: Props) {
+export function ContaItem({ conta, onUpdate, onDelete, onEdit, setContaForm }: Props) {
   const { id, descricao, valor, vencimento, status } = conta;
 
   const handleEdit = () => {
+    setContaForm({
+      descricao: conta.descricao,
+      valor: conta.valor,
+      vencimento: conta.vencimento,
+      recorrente: conta.recorrente,
+      inicio_periodo: conta.inicio_periodo,
+      fim_periodo: conta.fim_periodo,
+      status: conta.status,
+    });
     onEdit(conta);
   };
 
