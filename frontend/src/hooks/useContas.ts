@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { Conta, ContaCreate } from "../types/conta";
 
-const API_URL = "http://localhost:8000/api/v1/contas";
+const API_URL = import.meta.env.VITE_API_URL;
 
 export function useContas() {
   const [contas, setContas] = useState<Conta[]>([]);
