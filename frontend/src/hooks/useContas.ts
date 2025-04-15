@@ -32,7 +32,7 @@ export function useContas() {
 
   const atualizar = async (id: string, contaAtualizada: ContaCreate) => {
     try {
-      const response = await axios.put<Conta>(\`\${API_URL}/\${id}\`, contaAtualizada);
+      const response = await axios.put<Conta>(`${API_URL}/${id}`, contaAtualizada);
       setContas(prev => prev.map(c => c._id === id ? response.data : c));
     } catch {
       setError("Erro ao atualizar conta.");
@@ -41,7 +41,7 @@ export function useContas() {
 
   const deletar = async (id: string) => {
     try {
-      await axios.delete(\`\${API_URL}/\${id}\`);
+      await axios.delete(`${API_URL}/${id}`);
       setContas(prev => prev.filter(c => c._id !== id));
     } catch {
       setError("Erro ao deletar conta.");
