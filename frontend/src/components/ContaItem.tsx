@@ -41,7 +41,7 @@ export function ContaItem({ conta, onUpdate, onDelete, onEdit }: Props) {
     onUpdate(id, {
       descricao: editData.descricao,
       valor: Number(editData.valor),
-      vencimento: editData.vencimento,
+      vencimento: new Date(editData.vencimento).toISOString().split("T")[0],
       recorrente: editData.recorrente,
       inicio_periodo: editData.inicio_periodo,
       fim_periodo: editData.fim_periodo,
