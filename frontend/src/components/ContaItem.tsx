@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Conta, ContaCreate } from "../types/conta";
 
 interface Props {
   conta: Conta;
   onUpdate: (id: string, data: ContaCreate) => void;
   onDelete: (id: string) => void;
-  onEdit: (conta: Conta) => void;
+  onEdit?: (conta: Conta) => void;
 }
 
 export function ContaItem({ conta, onUpdate, onDelete, onEdit }: Props) {
@@ -32,26 +32,46 @@ export function ContaItem({ conta, onUpdate, onDelete, onEdit }: Props) {
       status: conta.status,
     });
     setShowEditModal(true);
+    if (onEdit) onEdit(conta);
   };
 
   const handleSave = () => {
+    if (!editData.descricao || !editData.vencimento || editData.valor <= 0) return;
+
     onUpdate(id, {
-      descricao: editData.descricao || "",
-      valor: Number(editData.valor) || 0,
-      vencimento: editData.vencimento || new Date().toISOString().split("T")[0],
-      recorrente: editData.recorrente ?? false,
-      inicio_periodo: editData.inicio_periodo || "",
-      fim_periodo: editData.fim_periodo || "",
+      descricao: editData.descricao,
+      valor: Number(editData.valor),
+      vencimento: editData.vencimento,
+      recorrente: editData.recorrente,
+      inicio_periodo: editData.inicio_periodo,
+      fim_periodo: editData.fim_periodo,
       status: editData.status || "pendente",
     });
     setShowEditModal(false);
   };
 
+  useEffect(() => {
+    if (showEditModal) {
+      setEditData({
+        descricao: conta.descricao,
+        valor: conta.valor,
+        vencimento: new Date(conta.vencimento).toISOString().split("T")[0],
+        recorrente: conta.recorrente,
+        inicio_periodo: conta.inicio_periodo,
+        fim_periodo: conta.fim_periodo,
+        status: conta.status,
+      });
+    }
+  }, [showEditModal, conta]);
+
   return (
     <div className="bg-white shadow p-4 rounded-md flex justify-between items-center">
       <div>
         <h2 className="text-lg font-semibold">{descricao}</h2>
-        <p className="text-gray-500">Vencimento: {new Date(new Date(vencimento).getTime() + 24 * 60 * 60 * 1000).toLocaleDateString()}</p>
+        <p className="text-gray-500">
+          Vencimento:{" "}
+          {new Date(new Date(vencimento).getTime() + 24 * 60 * 60 * 1000).toLocaleDateString()}
+        </p>
         <p className="text-gray-800 font-bold">
           {new Intl.NumberFormat("pt-BR", {
             style: "currency",
@@ -105,9 +125,9 @@ export function ContaItem({ conta, onUpdate, onDelete, onEdit }: Props) {
       </div>
 
       {showEditModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-4 rounded-md">
-            <h2 className="text-lg font-semibold">Editar Conta</h2>
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white p-4 rounded-md w-96">
+            <h2 className="text-lg font-semibold mb-4">Editar Conta</h2>
             <input
               type="text"
               value={editData.descricao}
@@ -117,7 +137,7 @@ export function ContaItem({ conta, onUpdate, onDelete, onEdit }: Props) {
             />
             <input
               type="number"
-              value={editData.valor}
+              value={editData.valor.toString()}
               onChange={(e) => setEditData({ ...editData, valor: Number(e.target.value) })}
               placeholder="Valor"
               className="border p-2 w-full mb-2"
@@ -128,12 +148,20 @@ export function ContaItem({ conta, onUpdate, onDelete, onEdit }: Props) {
               onChange={(e) => setEditData({ ...editData, vencimento: e.target.value })}
               className="border p-2 w-full mb-2"
             />
-            <button onClick={handleSave} className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700">
-              Salvar
-            </button>
-            <button onClick={() => setShowEditModal(false)} className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 ml-2">
-              Cancelar
-            </button>
+            <div className="flex justify-end">
+              <button
+                onClick={handleSave}
+                className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700"
+              >
+                Salvar
+              </button>
+              <button
+                onClick={() => setShowEditModal(false)}
+                className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 ml-2"
+              >
+                Cancelar
+              </button>
+            </div>
           </div>
         </div>
       )}
