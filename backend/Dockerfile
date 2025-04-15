@@ -1,17 +1,12 @@
 FROM python:3.11-slim
 
-# Diretório de trabalho
 WORKDIR /app
 
-# Copia o código do backend
-COPY . /app
+COPY ./requirements.txt /app/
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Instala dependências
-RUN pip install --upgrade pip \
-    && pip install -r requirements.txt
+COPY . /app/
 
-# Expõe a porta padrão da FastAPI
-EXPOSE 8000
+ENV PYTHONPATH=/app
 
-# Comando para iniciar a aplicação
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
