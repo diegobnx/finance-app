@@ -1,25 +1,33 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useContas } from "../hooks/useContas";
 import { ContaItem } from "../components/ContaItem";
 import { ContaForm } from "../components/ContaForm";
+import { Conta } from "../types/conta";
 
 export default function Home() {
   const { contas, loading, error, criar, atualizar, deletar } = useContas();
-  const [contaEditando, setContaEditando] = useState(null);
+  const [contaEditando, setContaEditando] = useState<Conta | null>(null);
+
+  const handleSubmit = (dados: Conta) => {
+    if (contaEditando && contaEditando.id === dados.id) {
+      atualizar(contaEditando.id, dados);
+    } else {
+      criar(dados);
+    }
+    setContaEditando(null);
+  };
+
+  const handleEdit = (conta: Conta) => {
+    console.log("Editando conta:", conta); // Adicionado para depuração
+    setContaEditando({ ...conta });
+  };
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
       <h1 className="text-3xl font-bold mb-6 text-center">Controle Financeiro</h1>
 
       <ContaForm
-        onSubmit={(dados) => {
-          if (contaEditando && contaEditando.id === dados.id) {
-            atualizar(contaEditando.id, dados);
-          } else {
-            criar(dados);
-          }
-          setContaEditando(null);
-        }}
+        onSubmit={handleSubmit}
         contaInicial={contaEditando}
         onCancel={() => setContaEditando(null)}
       />
@@ -34,7 +42,7 @@ export default function Home() {
             conta={conta}
             onUpdate={atualizar}
             onDelete={deletar}
-            onEdit={() => setContaEditando({ ...conta })}
+            onEdit={() => handleEdit(conta)}
             onMarkAsPaid={() =>
               atualizar(conta.id, { ...conta, status: "pago" })
             }

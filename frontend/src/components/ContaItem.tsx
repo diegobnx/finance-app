@@ -11,6 +11,11 @@ interface Props {
 export function ContaItem({ conta, onUpdate, onDelete, onEdit }: Props) {
   const { id, descricao, valor, vencimento, status } = conta;
 
+  const handleEdit = () => {
+    console.log("Editando conta:", conta);
+    onEdit(conta);
+  };
+
   return (
     <div className="bg-white shadow p-4 rounded-md flex justify-between items-center">
       <div>
@@ -53,7 +58,7 @@ export function ContaItem({ conta, onUpdate, onDelete, onEdit }: Props) {
         </button>
         <button
           className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
-          onClick={() => onEdit(conta)}
+          onClick={handleEdit}
         >
           Editar
         </button>

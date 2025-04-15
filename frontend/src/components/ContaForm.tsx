@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import React from "react";
 import { ContaCreate } from "../types/conta";
+import { v4 as uuidv4 } from "uuid";
 
 interface Props {
   onSubmit: (data: ContaCreate) => void;
@@ -51,10 +52,15 @@ export function ContaForm({ onSubmit, formData, isEditing }: Props) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit({
+
+    const contaParaEnviar = {
       ...form,
-      valor: parseFloat(form.valor).toFixed(2)
-    });
+      valor: parseFloat(form.valor).toFixed(2),
+      id: isEditing ? form.id : uuidv4(),
+    };
+
+    onSubmit(contaParaEnviar);
+
     if (!isEditing) {
       setForm({
         descricao: "",
