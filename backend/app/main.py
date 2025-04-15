@@ -21,10 +21,10 @@ app.include_router(contas.router, prefix="/api/v1/contas", tags=["Contas"])
 
 # Eventos de startup/shutdown
 @app.on_event("startup")
-async def startup_db():
+async def startup_event():
     await connect_to_mongo()
 
 
 @app.on_event("shutdown")
-async def shutdown_db():
+async def shutdown_event():
     await close_mongo_connection()
