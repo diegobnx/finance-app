@@ -26,7 +26,10 @@ services:
       - finance-net
 
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: http://backend:8000
     ports:
       - "3000:80"
     depends_on:

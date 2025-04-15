@@ -7,6 +7,7 @@ router = APIRouter()
 
 @router.get("/", response_model=List[ContaDB])
 async def listar_contas():
+    print("📥 Rota GET /api/v1/contas acessada")
     db = get_db()
     if db is None:
         raise HTTPException(status_code=500, detail="DB não inicializado")
