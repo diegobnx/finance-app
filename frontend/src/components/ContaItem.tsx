@@ -40,9 +40,9 @@ export function ContaItem({ conta, onUpdate, onDelete, onEdit }: Props) {
       valor: Number(editData.valor),
       vencimento: editData.vencimento,
       recorrente: editData.recorrente,
-      inicio_periodo: editData.inicio_periodo,
-      fim_periodo: editData.fim_periodo,
-      status: editData.status,
+      inicio_periodo: editData.inicio_periodo || "",
+      fim_periodo: editData.fim_periodo || "",
+      status: editData.status || "pendente",
     });
     setShowEditModal(false);
   };
