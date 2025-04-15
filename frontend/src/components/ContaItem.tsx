@@ -36,10 +36,10 @@ export function ContaItem({ conta, onUpdate, onDelete, onEdit }: Props) {
 
   const handleSave = () => {
     onUpdate(id, {
-      descricao: editData.descricao,
-      valor: Number(editData.valor),
-      vencimento: editData.vencimento,
-      recorrente: editData.recorrente,
+      descricao: editData.descricao || "",
+      valor: Number(editData.valor) || 0,
+      vencimento: editData.vencimento || new Date().toISOString().split("T")[0],
+      recorrente: editData.recorrente ?? false,
       inicio_periodo: editData.inicio_periodo || "",
       fim_periodo: editData.fim_periodo || "",
       status: editData.status || "pendente",
