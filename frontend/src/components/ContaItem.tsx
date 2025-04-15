@@ -75,12 +75,18 @@ export function ContaItem({ conta, onUpdate, onDelete, onEdit }: Props) {
           className={`${
             status === "paga" ? "bg-yellow-500 hover:bg-yellow-600" : "bg-green-600 hover:bg-green-700"
           } text-white px-3 py-1 rounded`}
-          onClick={() =>
-            onUpdate(id, {
-              ...conta,
-              status: status === "paga" ? "pendente" : "paga",
-            })
-          }
+          onClick={() => {
+            const novoStatus = conta.status === "paga" ? "pendente" : "paga";
+            onUpdate(conta.id, {
+              descricao: conta.descricao,
+              valor: conta.valor,
+              vencimento: conta.vencimento,
+              recorrente: conta.recorrente,
+              inicio_periodo: conta.inicio_periodo,
+              fim_periodo: conta.fim_periodo,
+              status: novoStatus,
+            });
+          }}
         >
           {status === "paga" ? "Marcar como Pendente" : "Marcar como Pago"}
         </button>
