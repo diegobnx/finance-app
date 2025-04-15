@@ -56,24 +56,20 @@ export function ContaForm({ onSubmit, formData, isEditing }: Props) {
     const contaParaEnviar = {
       ...form,
       valor: parseFloat(form.valor).toFixed(2),
+      id: form.id || uuidv4(),
     };
-    if (!form.id) {
-      contaParaEnviar.id = uuidv4();
-    }
 
     onSubmit(contaParaEnviar);
 
-    if (!isEditing) {
-      setForm({
-        descricao: "",
-        valor: "0",
-        vencimento: new Date().toISOString().split("T")[0],
-        recorrente: false,
-        inicio_periodo: "",
-        fim_periodo: "",
-        status: "pendente"
-      });
-    }
+    setForm({
+      descricao: "",
+      valor: "0",
+      vencimento: new Date().toISOString().split("T")[0],
+      recorrente: false,
+      inicio_periodo: "",
+      fim_periodo: "",
+      status: "pendente"
+    });
   };
 
   return (

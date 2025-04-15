@@ -12,7 +12,6 @@ export function ContaItem({ conta, onUpdate, onDelete, onEdit }: Props) {
   const { id, descricao, valor, vencimento, status } = conta;
 
   const handleEdit = () => {
-    console.log("Editando conta:", conta);
     onEdit(conta);
   };
 
