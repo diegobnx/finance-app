@@ -1,59 +1,53 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
+from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List
-from app.models.conta import ContaCreate, ContaDB
 from app.core.db import get_db
+from app.models.conta import Conta
+from app.services.conta_service import listar_contas as listar, criar_conta as criar
+from sqlalchemy.future import select
+from sqlalchemy.exc import NoResultFound
+from sqlalchemy import update, delete
 
 router = APIRouter()
 
-@router.get("/", response_model=List[ContaDB])
-async def listar_contas():
+@router.get("/", response_model=List[Conta])
+async def listar_contas(db: AsyncSession = Depends(get_db)):
     print("📥 Rota GET /api/v1/contas acessada")
-    db = get_db()
-    if db is None:
-        raise HTTPException(status_code=500, detail="DB não inicializado")
-    contas = await db["contas"].find().to_list(100)
-    return contas
+    return await listar(db)
 
-@router.post("/", response_model=ContaDB)
-async def criar_conta(conta: ContaCreate):
-    db = get_db()
-    if db is None:
-        raise HTTPException(status_code=500, detail="DB não inicializado")
-    conta_dict = conta.dict()
-    result = await db["contas"].insert_one(conta_dict)
-    conta_dict["_id"] = str(result.inserted_id)
-    return ContaDB(**conta_dict)
+@router.post("/", response_model=Conta)
+async def criar_conta(conta: dict, db: AsyncSession = Depends(get_db)):
+    return await criar(db, conta)
 
-@router.get("/{conta_id}", response_model=ContaDB)
-async def obter_conta(conta_id: str):
-    db = get_db()
-    if db is None:
-        raise HTTPException(status_code=500, detail="DB não inicializado")
-    conta = await db["contas"].find_one({"_id": conta_id})
+@router.get("/{conta_id}", response_model=Conta)
+async def obter_conta(conta_id: str, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(Conta).where(Conta.id == conta_id))
+    conta = result.scalars().first()
     if not conta:
         raise HTTPException(status_code=404, detail="Conta não encontrada")
-    return ContaDB(**conta)
+    return conta
 
-@router.put("/{conta_id}", response_model=ContaDB)
-async def atualizar_conta(conta_id: str, conta: ContaCreate):
-    db = get_db()
-    if db is None:
-        raise HTTPException(status_code=500, detail="DB não inicializado")
-    result = await db["contas"].find_one_and_update(
-        {"_id": conta_id},
-        {"$set": conta.dict()},
-        return_document=True
-    )
-    if not result:
+@router.put("/{conta_id}", response_model=Conta)
+async def atualizar_conta(conta_id: str, conta: dict, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(Conta).where(Conta.id == conta_id))
+    db_conta = result.scalars().first()
+    if not db_conta:
         raise HTTPException(status_code=404, detail="Conta não encontrada")
-    return ContaDB(**result)
+
+    for key, value in conta.items():
+        setattr(db_conta, key, value)
+
+    await db.commit()
+    await db.refresh(db_conta)
+    return db_conta
 
 @router.delete("/{conta_id}")
-async def deletar_conta(conta_id: str):
-    db = get_db()
-    if db is None:
-        raise HTTPException(status_code=500, detail="DB não inicializado")
-    result = await db["contas"].delete_one({"_id": conta_id})
-    if result.deleted_count == 0:
+async def deletar_conta(conta_id: str, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(Conta).where(Conta.id == conta_id))
+    conta = result.scalars().first()
+    if not conta:
         raise HTTPException(status_code=404, detail="Conta não encontrada")
+
+    await db.delete(conta)
+    await db.commit()
     return {"mensagem": "Conta deletada com sucesso"}

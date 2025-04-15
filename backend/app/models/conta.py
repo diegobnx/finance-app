@@ -1,22 +1,19 @@
-from pydantic import BaseModel, Field
-from typing import Optional
-from datetime import date
+from sqlalchemy import Column, Integer, String, Boolean, Date, JSON
+from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy.ext.mutable import MutableDict
+from sqlalchemy.orm import declarative_base
 from uuid import uuid4
 
-class ContaCreate(BaseModel):
-    descricao: str
-    valor: float
-    vencimento: date
-    recorrente: bool = False
-    inicio_periodo: Optional[str] = None  # formato 'YYYY-MM'
-    fim_periodo: Optional[str] = None
-    status: Optional[str] = "pendente"
+from app.core.db import Base
 
-class ContaDB(ContaCreate):
-    id: str = Field(default_factory=lambda: str(uuid4()), alias="_id")
+class Conta(Base):
+    __tablename__ = "contas"
 
-    class Config:
-        allow_population_by_field_name = True
-        json_encoders = {
-            date: lambda d: d.isoformat()
-        }
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    descricao = Column(String, nullable=False)
+    valor = Column(String, nullable=False)
+    vencimento = Column(Date, nullable=False)
+    recorrente = Column(Boolean, default=False)
+    inicio_periodo = Column(String, nullable=True)
+    fim_periodo = Column(String, nullable=True)
+    status = Column(String, default="pendente")

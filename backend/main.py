@@ -7,7 +7,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.v1 import contas
-from app.core.db import connect_to_mongo, close_mongo_connection
+from app.core.db import engine, Base
 
 app = FastAPI(title="Controle Financeiro", version="1.0.0")
 
@@ -27,9 +27,5 @@ app.include_router(contas.router, prefix="/api/v1/contas", tags=["Contas"])
 # Eventos de startup/shutdown
 @app.on_event("startup")
 async def startup_event():
-    await connect_to_mongo()
-
-
-@app.on_event("shutdown")
-async def shutdown_event():
-    await close_mongo_connection()
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)

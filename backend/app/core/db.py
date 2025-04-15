@@ -1,18 +1,14 @@
-from motor.motor_asyncio import AsyncIOMotorClient
-from app.core.config import MONGO_URI, DATABASE_NAME
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
+from sqlalchemy.orm import sessionmaker, declarative_base
+import os
 
-client: AsyncIOMotorClient = None
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql+asyncpg://admin:strongpass@postgres:5432/financeapp")
 
-async def connect_to_mongo():
-    global client
-    client = AsyncIOMotorClient(MONGO_URI)
-    print("✅ Conectado ao MongoDB!")
+engine = create_async_engine(DATABASE_URL, echo=True, future=True)
+async_session = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
-async def close_mongo_connection():
-    global client
-    if client:
-        client.close()
-        print("🛑 Conexão com MongoDB encerrada.")
+Base = declarative_base()
 
-def get_db():
-    return client[DATABASE_NAME] if client else None
+async def get_db():
+    async with async_session() as session:
+        yield session
