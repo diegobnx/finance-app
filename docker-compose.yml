@@ -1,18 +1,18 @@
-version: "3.8"
-
 services:
   backend:
     build: ./backend
     ports:
       - "5555:8000"
     volumes:
-      - ./backend/app:/app/app
+      - ./backend/app:/app
     environment:
       - MONGO_URI=mongodb://mongo:27017
       - DATABASE_NAME=financeapp
     depends_on:
       - mongo
     restart: unless-stopped
+    networks:
+      - finance-net
 
   mongo:
     image: mongo:6.0
@@ -21,6 +21,8 @@ services:
     volumes:
       - mongo_data:/data/db
     restart: unless-stopped
+    networks:
+      - finance-net
 
   frontend:
     build: ./frontend
@@ -29,6 +31,11 @@ services:
     depends_on:
       - backend
     restart: unless-stopped
+    networks:
+      - finance-net
 
 volumes:
   mongo_data:
+
+networks:
+  finance-net:
