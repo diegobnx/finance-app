@@ -4,18 +4,24 @@ import { ContaCreate } from "../types/conta";
 
 interface Props {
   onSubmit: (data: ContaCreate) => void;
+  formData?: ContaCreate;
+  isEditing?: boolean;
 }
 
-export function ContaForm({ onSubmit }: Props) {
-  const [form, setForm] = useState<ContaCreate>({
-    descricao: "",
-    valor: "0",
-    vencimento: new Date().toISOString().split("T")[0],
-    recorrente: false,
-    inicio_periodo: "",
-    fim_periodo: "",
-    status: "pendente"
-  });
+export function ContaForm({ onSubmit, formData, isEditing }: Props) {
+  const [form, setForm] = useState<ContaCreate>(
+    isEditing && formData
+      ? formData
+      : {
+          descricao: "",
+          valor: "0",
+          vencimento: new Date().toISOString().split("T")[0],
+          recorrente: false,
+          inicio_periodo: "",
+          fim_periodo: "",
+          status: "pendente"
+        }
+  );
 
   const formatarMoeda = (valor: string) => {
     const numerico = valor.replace(/\D/g, "");
@@ -43,19 +49,21 @@ export function ContaForm({ onSubmit }: Props) {
       ...form,
       valor: parseFloat(form.valor).toFixed(2)
     });
-    setForm({
-      descricao: "",
-      valor: "0",
-      vencimento: new Date().toISOString().split("T")[0],
-      recorrente: false,
-      inicio_periodo: "",
-      fim_periodo: "",
-      status: "pendente"
-    });
+    if (!isEditing) {
+      setForm({
+        descricao: "",
+        valor: "0",
+        vencimento: new Date().toISOString().split("T")[0],
+        recorrente: false,
+        inicio_periodo: "",
+        fim_periodo: "",
+        status: "pendente"
+      });
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white shadow p-4 rounded-md space-y-4">
+    <form key={form.id || "novo"} onSubmit={handleSubmit} className="bg-white shadow p-4 rounded-md space-y-4">
       <div>
         <label className="block font-medium">Descrição</label>
         <input
@@ -76,7 +84,7 @@ export function ContaForm({ onSubmit }: Props) {
           value={new Intl.NumberFormat("pt-BR", {
             style: "currency",
             currency: "BRL",
-          }).format(Number(form.valor))}
+          }).format(Number(form.valor || "0"))}
           onChange={(e) => {
             const valorNumerico = e.target.value.replace(/\D/g, "");
             const numero = (parseInt(valorNumerico || "0", 10) / 100).toFixed(2);
@@ -159,7 +167,7 @@ export function ContaForm({ onSubmit }: Props) {
         type="submit"
         className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
       >
-        Adicionar Conta
+        {isEditing ? "Salvar Alterações" : "Adicionar Conta"}
       </button>
     </form>
   );
