@@ -28,7 +28,7 @@ export default function Relatorios() {
   // Agrupamento por categoria
   const categoriasMap: { [key: string]: number } = {};
   contas.forEach(conta => {
-    categoriasMap[conta.descricao] = (categoriasMap[conta.descricao] || 0) + conta.valor;
+    categoriasMap[conta.descricao] = (categoriasMap[conta.descricao] || 0) + Number(conta.valor);
   });
 
   const pieData = {
@@ -46,7 +46,7 @@ export default function Relatorios() {
   const mesesMap: { [key: string]: number } = {};
   contas.forEach(conta => {
     const mes = new Date(conta.vencimento).toLocaleString("pt-BR", { month: "short" });
-    mesesMap[mes] = (mesesMap[mes] || 0) + conta.valor;
+    mesesMap[mes] = (mesesMap[mes] || 0) + Number(conta.valor);
   });
 
   const barData = {

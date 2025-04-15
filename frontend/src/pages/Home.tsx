@@ -18,7 +18,7 @@ export default function Home() {
       <div className="mt-6 space-y-4">
         {contas.map((conta) => (
           <ContaItem
-            key={conta._id}
+            key={conta.id}
             conta={conta}
             onUpdate={atualizar}
             onDelete={deletar}

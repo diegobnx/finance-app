@@ -9,13 +9,25 @@ interface Props {
 export function ContaForm({ onSubmit }: Props) {
   const [form, setForm] = useState<ContaCreate>({
     descricao: "",
-    valor: 0,
+    valor: "0",
     vencimento: new Date().toISOString().split("T")[0],
     recorrente: false,
     inicio_periodo: "",
     fim_periodo: "",
     status: "pendente"
   });
+
+  const formatarMoeda = (valor: string) => {
+    const numerico = valor.replace(/\D/g, "");
+    const numero = (parseInt(numerico || "0", 10) / 100).toFixed(2);
+    return {
+      exibicao: new Intl.NumberFormat("pt-BR", {
+        style: "currency",
+        currency: "BRL",
+      }).format(Number(numero)),
+      valorNumerico: numero
+    };
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value, type, checked } = e.target;
@@ -27,10 +39,13 @@ export function ContaForm({ onSubmit }: Props) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(form);
+    onSubmit({
+      ...form,
+      valor: parseFloat(form.valor).toFixed(2)
+    });
     setForm({
       descricao: "",
-      valor: 0,
+      valor: "0",
       vencimento: new Date().toISOString().split("T")[0],
       recorrente: false,
       inicio_periodo: "",
@@ -56,12 +71,18 @@ export function ContaForm({ onSubmit }: Props) {
       <div>
         <label className="block font-medium">Valor</label>
         <input
-          type="number"
+          type="text"
           name="valor"
-          value={form.valor}
-          onChange={handleChange}
+          value={new Intl.NumberFormat("pt-BR", {
+            style: "currency",
+            currency: "BRL",
+          }).format(Number(form.valor))}
+          onChange={(e) => {
+            const valorNumerico = e.target.value.replace(/\D/g, "");
+            const numero = (parseInt(valorNumerico || "0", 10) / 100).toFixed(2);
+            setForm((prev) => ({ ...prev, valor: numero }));
+          }}
           className="w-full border rounded px-3 py-2"
-          step="0.01"
           required
         />
       </div>

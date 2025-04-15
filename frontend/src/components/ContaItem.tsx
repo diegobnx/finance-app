@@ -8,14 +8,19 @@ interface Props {
 }
 
 export function ContaItem({ conta, onUpdate, onDelete }: Props) {
-  const { _id, descricao, valor, vencimento, status } = conta;
+  const { id, descricao, valor, vencimento, status } = conta;
 
   return (
     <div className="bg-white shadow p-4 rounded-md flex justify-between items-center">
       <div>
         <h2 className="text-lg font-semibold">{descricao}</h2>
         <p className="text-gray-500">Vencimento: {new Date(vencimento).toLocaleDateString()}</p>
-        <p className="text-gray-800 font-bold">R$ {valor.toFixed(2)}</p>
+        <p className="text-gray-800 font-bold">
+          {new Intl.NumberFormat("pt-BR", {
+            style: "currency",
+            currency: "BRL",
+          }).format(Number(valor))}
+        </p>
         <p
           className={`inline-block px-2 py-1 text-sm rounded ${
             status === "paga"
@@ -31,13 +36,13 @@ export function ContaItem({ conta, onUpdate, onDelete }: Props) {
       <div className="space-x-2">
         <button
           className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
-          onClick={() => onUpdate(_id, conta)}
+          onClick={() => onUpdate(id, conta)}
         >
           Editar
         </button>
         <button
           className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
-          onClick={() => onDelete(_id)}
+          onClick={() => onDelete(id)}
         >
           Excluir
         </button>
