@@ -14,7 +14,7 @@ export function ContaItem({ conta, onUpdate, onDelete }: Props) {
     <div className="bg-white shadow p-4 rounded-md flex justify-between items-center">
       <div>
         <h2 className="text-lg font-semibold">{descricao}</h2>
-        <p className="text-gray-500">Vencimento: {new Date(vencimento).toLocaleDateString()}</p>
+        <p className="text-gray-500">Vencimento: {new Date(new Date(vencimento).getTime() + 24 * 60 * 60 * 1000).toLocaleDateString()}</p>
         <p className="text-gray-800 font-bold">
           {new Intl.NumberFormat("pt-BR", {
             style: "currency",
@@ -33,7 +33,23 @@ export function ContaItem({ conta, onUpdate, onDelete }: Props) {
           {status}
         </p>
       </div>
-      <div className="space-x-2">
+      <div className="space-x-2 flex">
+        <button
+          className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700"
+          onClick={() =>
+            onUpdate(id, {
+              descricao,
+              valor,
+              vencimento,
+              recorrente: conta.recorrente,
+              inicio_periodo: conta.inicio_periodo,
+              fim_periodo: conta.fim_periodo,
+              status: "paga",
+            })
+          }
+        >
+          Marcar Pago
+        </button>
         <button
           className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
           onClick={() =>
@@ -55,22 +71,6 @@ export function ContaItem({ conta, onUpdate, onDelete }: Props) {
           onClick={() => onDelete(id)}
         >
           Excluir
-        </button>
-        <button
-          className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
-          onClick={() =>
-            onUpdate(id, {
-              descricao,
-              valor,
-              vencimento,
-              recorrente: conta.recorrente,
-              inicio_periodo: conta.inicio_periodo,
-              fim_periodo: conta.fim_periodo,
-              status: "paga",
-            })
-          }
-        >
-          Marcar como Pago
         </button>
       </div>
     </div>
