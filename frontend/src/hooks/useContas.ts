@@ -8,6 +8,9 @@ export function useContas() {
   const [contas, setContas] = useState<Conta[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  
+  // Estado para armazenar a conta que está sendo editada
+  const [contaEmEdicao, setContaEmEdicao] = useState<Conta | null>(null);
 
   const listar = async () => {
     setLoading(true);
@@ -39,6 +42,19 @@ export function useContas() {
     }
   };
 
+  const pagar = async (id: string) => {
+    try {
+      const conta = contas.find(c => c.id === id);
+      if (!conta) throw new Error("Conta não encontrada");
+
+      const contaAtualizada = { ...conta, status: "pago" };
+      const response = await axios.put<Conta>(`${BASE_URL}/contas/${id}`, contaAtualizada);
+      setContas(prev => prev.map(c => c.id === id ? response.data : c));
+    } catch {
+      setError("Erro ao pagar conta.");
+    }
+  };
+
   const deletar = async (id: string) => {
     try {
       await axios.delete(`${BASE_URL}/contas/${id}`);
@@ -52,6 +68,7 @@ export function useContas() {
     listar();
   }, []);
 
+  // Retorna os dados e funções para manipulação das contas, incluindo a conta em edição
   return {
     contas,
     loading,
@@ -59,6 +76,9 @@ export function useContas() {
     listar,
     criar,
     atualizar,
-    deletar
+    deletar,
+    contaEmEdicao,
+    setContaEmEdicao,
+    pagar,
   };
 }

@@ -36,6 +36,7 @@ async def atualizar_conta(conta_id: str, conta: ContaCreate, db: AsyncSession = 
         setattr(db_conta, key, value)
 
     await db.commit()
+    await db.flush()
     await db.refresh(db_conta)
     return db_conta
 
