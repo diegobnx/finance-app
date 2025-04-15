@@ -35,7 +35,15 @@ export function ContaItem({ conta, onUpdate, onDelete, onEdit }: Props) {
   };
 
   const handleSave = () => {
-    onUpdate(id, editData);
+    onUpdate(id, {
+      descricao: editData.descricao,
+      valor: Number(editData.valor),
+      vencimento: editData.vencimento,
+      recorrente: editData.recorrente,
+      inicio_periodo: editData.inicio_periodo,
+      fim_periodo: editData.fim_periodo,
+      status: editData.status,
+    });
     setShowEditModal(false);
   };
 
