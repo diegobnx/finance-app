@@ -2,7 +2,7 @@
 
 set -e
 
-REPO_URL="https://github.com/diegobnx/finance-app.git"
+REPO_URL="git@github.com:diegobnx/finance-app.git"
 PROJECT_DIR="finance-app"
 
 if [ ! -d "$PROJECT_DIR/.git" ]; then
