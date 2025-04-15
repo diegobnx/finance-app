@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Conta, ContaCreate } from "../types/conta";
 
 interface Props {
@@ -6,14 +6,23 @@ interface Props {
   onUpdate: (id: string, data: ContaCreate) => void;
   onDelete: (id: string) => void;
   onEdit: (conta: Conta) => void;
-  setContaForm: (conta: ContaCreate) => void;
 }
 
-export function ContaItem({ conta, onUpdate, onDelete, onEdit, setContaForm }: Props) {
+export function ContaItem({ conta, onUpdate, onDelete, onEdit }: Props) {
   const { id, descricao, valor, vencimento, status } = conta;
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editData, setEditData] = useState<ContaCreate>({
+    descricao: "",
+    valor: 0,
+    vencimento: "",
+    recorrente: false,
+    inicio_periodo: "",
+    fim_periodo: "",
+    status: "",
+  });
 
   const handleEdit = () => {
-    setContaForm({
+    setEditData({
       descricao: conta.descricao,
       valor: conta.valor,
       vencimento: new Date(conta.vencimento).toISOString().split("T")[0],
@@ -22,7 +31,12 @@ export function ContaItem({ conta, onUpdate, onDelete, onEdit, setContaForm }: P
       fim_periodo: conta.fim_periodo,
       status: conta.status,
     });
-    onEdit(conta);
+    setShowEditModal(true);
+  };
+
+  const handleSave = () => {
+    onUpdate(id, editData);
+    setShowEditModal(false);
   };
 
   return (
@@ -78,6 +92,40 @@ export function ContaItem({ conta, onUpdate, onDelete, onEdit, setContaForm }: P
           Excluir
         </button>
       </div>
+
+      {showEditModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-4 rounded-md">
+            <h2 className="text-lg font-semibold">Editar Conta</h2>
+            <input
+              type="text"
+              value={editData.descricao}
+              onChange={(e) => setEditData({ ...editData, descricao: e.target.value })}
+              placeholder="Descrição"
+              className="border p-2 w-full mb-2"
+            />
+            <input
+              type="number"
+              value={editData.valor}
+              onChange={(e) => setEditData({ ...editData, valor: Number(e.target.value) })}
+              placeholder="Valor"
+              className="border p-2 w-full mb-2"
+            />
+            <input
+              type="date"
+              value={editData.vencimento}
+              onChange={(e) => setEditData({ ...editData, vencimento: e.target.value })}
+              className="border p-2 w-full mb-2"
+            />
+            <button onClick={handleSave} className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700">
+              Salvar
+            </button>
+            <button onClick={() => setShowEditModal(false)} className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 ml-2">
+              Cancelar
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
