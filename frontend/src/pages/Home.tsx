@@ -34,7 +34,7 @@ export default function Home() {
             conta={conta}
             onUpdate={atualizar}
             onDelete={deletar}
-            onEdit={() => setContaEditando(conta)}
+            onEdit={() => setContaEditando({ ...conta })}
             onMarkAsPaid={() =>
               atualizar(conta.id, { ...conta, status: "pago" })
             }
