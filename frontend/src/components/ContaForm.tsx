@@ -56,8 +56,10 @@ export function ContaForm({ onSubmit, formData, isEditing }: Props) {
     const contaParaEnviar = {
       ...form,
       valor: parseFloat(form.valor).toFixed(2),
-      id: isEditing ? form.id : uuidv4(),
     };
+    if (!form.id) {
+      contaParaEnviar.id = uuidv4();
+    }
 
     onSubmit(contaParaEnviar);
 
