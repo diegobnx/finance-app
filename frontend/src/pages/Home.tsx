@@ -13,12 +13,12 @@ export default function Home() {
 
       <ContaForm
         onSubmit={(dados) => {
-          if (contaEditando) {
+          if (contaEditando && contaEditando.id === dados.id) {
             atualizar(contaEditando.id, dados);
-            setContaEditando(null);
           } else {
             criar(dados);
           }
+          setContaEditando(null);
         }}
         contaInicial={contaEditando}
         onCancel={() => setContaEditando(null)}
