@@ -36,7 +36,17 @@ export function ContaItem({ conta, onUpdate, onDelete }: Props) {
       <div className="space-x-2">
         <button
           className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
-          onClick={() => onUpdate(id, conta)}
+          onClick={() =>
+            onUpdate(id, {
+              descricao,
+              valor,
+              vencimento,
+              recorrente: conta.recorrente,
+              inicio_periodo: conta.inicio_periodo,
+              fim_periodo: conta.fim_periodo,
+              status,
+            })
+          }
         >
           Editar
         </button>
@@ -45,6 +55,22 @@ export function ContaItem({ conta, onUpdate, onDelete }: Props) {
           onClick={() => onDelete(id)}
         >
           Excluir
+        </button>
+        <button
+          className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
+          onClick={() =>
+            onUpdate(id, {
+              descricao,
+              valor,
+              vencimento,
+              recorrente: conta.recorrente,
+              inicio_periodo: conta.inicio_periodo,
+              fim_periodo: conta.fim_periodo,
+              status: "paga",
+            })
+          }
+        >
+          Marcar como Pago
         </button>
       </div>
     </div>

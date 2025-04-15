@@ -148,27 +148,6 @@ export function ContaForm({ onSubmit, formData, isEditing }: Props) {
         </div>
       )}
 
-      <div>
-        <label className="block font-medium">Status</label>
-        <select
-          name="status"
-          value={form.status}
-          onChange={handleChange}
-          className="w-full border rounded px-3 py-2"
-        >
-          <option value="pendente">Pendente</option>
-          <option value="pago">Pago</option>
-        </select>
-      </div>
-
-      <button
-        type="button"
-        onClick={() => setForm((prev) => ({ ...prev, status: "pago" }))}
-        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-      >
-        Marcar como Pago
-      </button>
-
       <button
         type="submit"
         className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
