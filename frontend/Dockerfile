@@ -3,14 +3,18 @@ FROM node:20-alpine
 # Diretório de trabalho
 WORKDIR /app
 
+# Define a variável de ambiente
+ARG VITE_API_URL
+ENV VITE_API_URL=${VITE_API_URL}
+
 # Copia os arquivos do projeto
 COPY . .
 
 # Instala dependências
 RUN npm install
 
-ARG VITE_API_URL
-ENV VITE_API_URL=$VITE_API_URL
+# Cria arquivo .env para o Vite
+RUN echo "VITE_API_URL=${VITE_API_URL}" > .env
 
 # Compila o projeto
 RUN npm run build
