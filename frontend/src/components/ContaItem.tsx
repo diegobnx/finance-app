@@ -16,7 +16,7 @@ export function ContaItem({ conta, onUpdate, onDelete, onEdit, setContaForm }: P
     setContaForm({
       descricao: conta.descricao,
       valor: conta.valor,
-      vencimento: conta.vencimento,
+      vencimento: new Date(conta.vencimento).toISOString().split("T")[0],
       recorrente: conta.recorrente,
       inicio_periodo: conta.inicio_periodo,
       fim_periodo: conta.fim_periodo,
