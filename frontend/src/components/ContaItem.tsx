@@ -5,9 +5,10 @@ interface Props {
   conta: Conta;
   onUpdate: (id: string, data: ContaCreate) => void;
   onDelete: (id: string) => void;
+  onEdit: (conta: Conta) => void;
 }
 
-export function ContaItem({ conta, onUpdate, onDelete }: Props) {
+export function ContaItem({ conta, onUpdate, onDelete, onEdit }: Props) {
   const { id, descricao, valor, vencimento, status } = conta;
 
   return (
@@ -52,17 +53,7 @@ export function ContaItem({ conta, onUpdate, onDelete }: Props) {
         </button>
         <button
           className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
-          onClick={() =>
-            onUpdate(id, {
-              descricao,
-              valor,
-              vencimento,
-              recorrente: conta.recorrente,
-              inicio_periodo: conta.inicio_periodo,
-              fim_periodo: conta.fim_periodo,
-              status,
-            })
-          }
+          onClick={() => onEdit(conta)}
         >
           Editar
         </button>
