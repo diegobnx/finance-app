@@ -20,7 +20,7 @@ export default function Relatorios() {
   const [contas, setContas] = useState<Conta[]>([]);
 
   useEffect(() => {
-    axios.get(`${import.meta.env.VITE_API_URL}/api/v1/contas`)
+    axios.get(`${import.meta.env.VITE_API_URL}/contas`)
       .then(res => setContas(res.data))
       .catch(err => console.error("Erro ao buscar contas:", err));
   }, []);
