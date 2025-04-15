@@ -4,7 +4,7 @@ services:
     ports:
       - "5555:8000"
     volumes:
-      - ./backend/app:/app
+      - ./backend/app:/app/app
     environment:
       - MONGO_URI=mongodb://mongo:27017
       - DATABASE_NAME=financeapp
