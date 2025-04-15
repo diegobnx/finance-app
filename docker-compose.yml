@@ -8,6 +8,7 @@ services:
     environment:
       - MONGO_URI=mongodb://mongo:27017
       - DATABASE_NAME=financeapp
+      - PYTHONPATH=/app
     depends_on:
       - mongo
     restart: unless-stopped
