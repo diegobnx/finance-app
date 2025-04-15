@@ -17,3 +17,25 @@ class Conta(Base):
     inicio_periodo = Column(String, nullable=True)
     fim_periodo = Column(String, nullable=True)
     status = Column(String, default="pendente")
+
+from pydantic import BaseModel
+from typing import Optional
+from datetime import date
+
+class ContaBase(BaseModel):
+    descricao: str
+    valor: str
+    vencimento: date
+    recorrente: Optional[bool] = False
+    inicio_periodo: Optional[str] = None
+    fim_periodo: Optional[str] = None
+    status: Optional[str] = "pendente"
+
+class ContaCreate(ContaBase):
+    pass
+
+class ContaResponse(ContaBase):
+    id: str
+
+    class Config:
+        orm_mode = True
