@@ -9,7 +9,6 @@ interface Props {
 }
 
 export function ContaItem({ conta, onUpdate, onDelete, onEdit }: Props) {
-  const { id, descricao, valor, vencimento, status } = conta;
   const [showEditModal, setShowEditModal] = useState(false);
   const [editData, setEditData] = useState<ContaCreate>({
     descricao: "",
@@ -55,7 +54,7 @@ export function ContaItem({ conta, onUpdate, onDelete, onEdit }: Props) {
 
     console.log("Enviando payload corrigido:", payload);
 
-    onUpdate(id, payload);
+    onUpdate(conta.id, payload);
     setShowEditModal(false);
   };
 
@@ -76,29 +75,29 @@ export function ContaItem({ conta, onUpdate, onDelete, onEdit }: Props) {
   return (
     <div className="bg-white shadow p-4 rounded-md flex justify-between items-center">
       <div>
-        <h2 className="text-lg font-semibold">{descricao}</h2>
+        <h2 className="text-lg font-semibold">{conta.descricao}</h2>
         <p className="text-gray-500">
           Vencimento:{" "}
-          {vencimento ? new Date(new Date(vencimento).getTime() + 24 * 60 * 60 * 1000).toLocaleDateString() : "Sem vencimento"}
+          {conta.vencimento ? new Date(new Date(conta.vencimento).getTime() + 24 * 60 * 60 * 1000).toLocaleDateString() : "Sem vencimento"}
         </p>
         <p className="text-gray-800 font-bold">
-          {valor
+          {conta.valor
             ? new Intl.NumberFormat("pt-BR", {
                 style: "currency",
                 currency: "BRL",
-              }).format(Number(valor))
+              }).format(Number(conta.valor))
             : "R$ 0,00"}
         </p>
         <p
           className={`inline-block px-2 py-1 text-sm rounded ${
-            status === "paga"
+            conta.status === "paga"
               ? "bg-green-100 text-green-800"
-              : status === "vencida"
+              : conta.status === "vencida"
               ? "bg-red-100 text-red-800"
               : "bg-yellow-100 text-yellow-800"
           }`}
         >
-          {status}
+          {conta.status}
         </p>
         {typeof conta.numero_parcela === "number" && typeof conta.total_parcelas === "number" && (
           <p className="text-sm text-gray-600">
@@ -114,7 +113,7 @@ export function ContaItem({ conta, onUpdate, onDelete, onEdit }: Props) {
       <div className="space-x-2 flex">
         <button
           className={`${
-            status === "paga" ? "bg-yellow-500 hover:bg-yellow-600" : "bg-green-600 hover:bg-green-700"
+            conta.status === "paga" ? "bg-yellow-500 hover:bg-yellow-600" : "bg-green-600 hover:bg-green-700"
           } text-white px-3 py-1 rounded`}
           onClick={() => {
             const novoStatus = conta.status === "paga" ? "pendente" : "paga";
@@ -129,7 +128,7 @@ export function ContaItem({ conta, onUpdate, onDelete, onEdit }: Props) {
             });
           }}
         >
-          {status === "paga" ? "Marcar como Pendente" : "Marcar como Pago"}
+          {conta.status === "paga" ? "Marcar como Pendente" : "Marcar como Pago"}
         </button>
         <button
           className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
@@ -139,7 +138,7 @@ export function ContaItem({ conta, onUpdate, onDelete, onEdit }: Props) {
         </button>
         <button
           className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
-          onClick={() => onDelete(id)}
+          onClick={() => onDelete(conta.id)}
         >
           Excluir
         </button>

@@ -8,6 +8,8 @@ export interface Conta {
   fim_periodo?: string;
   status: "pendente" | "paga" | "vencida";
   dia_vencimento?: number; // <-- novo campo opcional para contas recorrentes
+  numero_parcela?: number;
+  total_parcelas?: number;
 }
 
 export interface ContaCreate extends Omit<Conta, "_id"> {}
