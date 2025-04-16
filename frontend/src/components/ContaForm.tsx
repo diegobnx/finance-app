@@ -20,7 +20,8 @@ export function ContaForm({ onSubmit, formData, isEditing }: Props) {
           recorrente: false,
           total_parcelas: undefined,
           status: "pendente",
-          dia_vencimento: undefined
+          dia_vencimento: undefined,
+          quantidade_parcelas: undefined  // <-- add this line
         }
   );
 
@@ -74,7 +75,8 @@ export function ContaForm({ onSubmit, formData, isEditing }: Props) {
       recorrente: false,
       total_parcelas: undefined,
       status: "pendente",
-      dia_vencimento: undefined
+      dia_vencimento: undefined,
+      quantidade_parcelas: undefined  // <-- add this line
     });
   };
 
