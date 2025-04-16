@@ -51,22 +51,27 @@ export function ContaForm({ onSubmit, formData, isEditing }: Props) {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const { quantidade_parcelas, ...rest } = form;
     const contaParaEnviar: any = {
-      ...rest,
-      valor: parseFloat(rest.valor).toFixed(2),
-      total_parcelas: rest.total_parcelas || null,
-      dia_vencimento: rest.dia_vencimento || null
+      ...form,
+      valor: parseFloat(form.valor).toFixed(2),
+      total_parcelas: form.total_parcelas || null,
+      dia_vencimento: form.dia_vencimento || null,
+      quantidade_parcelas: form.total_parcelas || null
     };
 
     if (!isEditing) {
       contaParaEnviar.id = uuidv4();
     }
 
-    onSubmit(contaParaEnviar);
+    const resultado = await onSubmit(contaParaEnviar);
+    if (Array.isArray(resultado)) {
+      console.log("Contas adicionadas:", resultado);
+    } else {
+      console.log("Conta adicionada:", resultado);
+    }
 
     setForm({
       descricao: "",
