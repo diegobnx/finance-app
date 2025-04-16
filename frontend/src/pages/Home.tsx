@@ -29,11 +29,13 @@ export default function Home() {
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6 text-center">Controle Financeiro</h1>
+      <h1 className="text-3xl font-bold mb-6 text-center">
+        Controle Financeiro
+      </h1>
 
       <ContaForm
         onSubmit={handleSubmit}
-        contaInicial={contaEditando}
+        conta={contaEditando}
         onCancel={() => setContaEditando(null)}
       />
 
@@ -54,7 +56,11 @@ export default function Home() {
                 status: conta.status === "pago" ? "pendente" : "pago",
               })
             }
-            buttonText={conta.status === "pago" ? "Marcar como pendente" : "Marcar como pago"}
+            buttonText={
+              conta.status === "pago"
+                ? "Marcar como pendente"
+                : "Marcar como pago"
+            }
           />
         ))}
       </div>
