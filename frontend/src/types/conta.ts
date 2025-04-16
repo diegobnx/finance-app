@@ -7,6 +7,7 @@ export interface Conta {
   inicio_periodo?: string; // 'YYYY-MM'
   fim_periodo?: string;
   status: "pendente" | "paga" | "vencida";
+  dia_vencimento?: number; // <-- novo campo opcional para contas recorrentes
 }
 
 export interface ContaCreate extends Omit<Conta, "_id"> {}

@@ -3,10 +3,10 @@ from decimal import Decimal
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from app.schemas.conta import ContaCreate
-from typing import Union
+from typing import Union, List
 from app.models.conta import Conta
 
-async def criar_conta(db: AsyncSession, conta_data: dict) -> Union[Conta, list[Conta]]:
+async def criar_conta(db: AsyncSession, conta_data: dict) -> Union[Conta, List[Conta]]:
     if "valor" in conta_data:
         conta_data["valor"] = Decimal(str(conta_data["valor"]))
 
@@ -17,6 +17,12 @@ async def criar_conta(db: AsyncSession, conta_data: dict) -> Union[Conta, list[C
     fim_periodo = conta_data.get("fim_periodo")
 
     if recorrente and inicio_periodo and fim_periodo:
+        try:
+            inicio = datetime.datetime.strptime(inicio_periodo, "%Y-%m-%d").date()
+            fim = datetime.datetime.strptime(fim_periodo, "%Y-%m-%d").date()
+        except ValueError:
+            raise ValueError("Formato inválido para inicio_periodo ou fim_periodo (esperado: YYYY-MM-DD)")
+
         if not dia_vencimento:
             if "vencimento" not in conta_data:
                 raise ValueError("Campo 'vencimento' ou 'dia_vencimento' é obrigatório para contas recorrentes.")
