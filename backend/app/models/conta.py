@@ -4,7 +4,7 @@ from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.orm import declarative_base
 from uuid import uuid4
 
-from app.core.db import Base
+from core.db import Base
 
 class Conta(Base):
     """
