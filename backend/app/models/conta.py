@@ -22,30 +22,3 @@ class Conta(Base):
     fim_periodo = Column(Date, nullable=True)
     status = Column(String, default="pendente")
     dia_vencimento = Column(Integer, nullable=True)
-
-from pydantic import BaseModel
-from typing import Optional
-from datetime import date
-
-class ContaBase(BaseModel):
-    """
-    Schema base para criação e resposta de contas. Pode conter informações de vencimento único ou recorrente,
-    incluindo intervalo de recorrência e o dia específico do vencimento.
-    """
-    descricao: str
-    valor: float
-    vencimento: Optional[date] = None
-    recorrente: Optional[bool] = False
-    inicio_periodo: Optional[date] = None
-    fim_periodo: Optional[date] = None
-    status: Optional[str] = "pendente"
-    dia_vencimento: Optional[int] = None
-
-class ContaCreate(ContaBase):
-    pass
-
-class ContaResponse(ContaBase):
-    id: str
-
-    class Config:
-        orm_mode = True
