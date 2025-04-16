@@ -6,6 +6,7 @@ from app.core.db import get_db
 from app.models.conta import Conta
 from app.schemas.conta import ContaCreate, ContaResponse
 from app.services.conta_service import listar_contas as listar, criar_conta as criar
+from app.services.conta_service import criar_contas_parceladas
 
 router = APIRouter()
 
