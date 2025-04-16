@@ -9,11 +9,17 @@ export default function Home() {
   const [contaEditando, setContaEditando] = useState<Conta | null>(null);
 
   const handleSubmit = (dados: Conta) => {
+    if (!dados.descricao || !dados.valor || !dados.vencimento || !dados.status) {
+      console.error("Dados inválidos:", dados);
+      return;
+    }
+
     if (contaEditando && contaEditando.id === dados.id) {
       atualizar(contaEditando.id, dados);
     } else {
       criar(dados);
     }
+
     setContaEditando(null);
   };
 

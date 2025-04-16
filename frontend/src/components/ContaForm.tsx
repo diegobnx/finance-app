@@ -57,9 +57,10 @@ export function ContaForm({ onSubmit, formData, isEditing }: Props) {
     const contaParaEnviar: any = {
       ...form,
       valor: parseFloat(form.valor).toFixed(2),
-      total_parcelas: form.total_parcelas || null,
-      dia_vencimento: form.dia_vencimento || null,
-      quantidade_parcelas: form.total_parcelas || null
+      quantidade_parcelas: form.recorrente ? Number(form.total_parcelas) || 1 : undefined,
+      dia_vencimento: form.recorrente ? Number(form.dia_vencimento) || 1 : undefined,
+      total_parcelas: form.recorrente ? Number(form.total_parcelas) || 1 : undefined,
+      vencimento: form.vencimento || new Date().toISOString().split("T")[0],
     };
 
     if (!isEditing) {
