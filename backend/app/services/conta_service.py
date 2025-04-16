@@ -12,10 +12,10 @@ async def criar_conta_recorrente(db: AsyncSession, conta_data: ContaCreate) -> L
 
     if not conta_data.quantidade_parcelas or not conta_data.vencimento:
         raise ValueError("Campos 'quantidade_parcelas' e 'vencimento' são obrigatórios para contas recorrentes.")
-    try:
-        vencimento_ref = datetime.datetime.strptime(conta_data.vencimento, "%Y-%m-%d")
-    except ValueError:
-        raise ValueError("Formato de data inválido para vencimento (esperado: YYYY-MM-DD)")
+    if isinstance(conta_data.vencimento, str):
+        vencimento_ref = datetime.datetime.strptime(conta_data.vencimento, "%Y-%m-%d").date()
+    else:
+        vencimento_ref = conta_data.vencimento
 
     vencimento_dia = conta_data.dia_vencimento if conta_data.dia_vencimento is not None else vencimento_ref.day
 
