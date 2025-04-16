@@ -71,3 +71,7 @@ async def criar_conta(db: AsyncSession, conta_data: dict) -> Union[Conta, List[C
         await db.commit()
         await db.refresh(nova_conta)
         return nova_conta
+
+async def listar_contas(db: AsyncSession):
+    result = await db.execute(select(Conta))
+    return result.scalars().all()
