@@ -4,21 +4,21 @@ from typing import List
 from app.core.db import get_db
 from app.models.conta import ContaCreate, ContaResponse, Conta
 from app.services.conta_service import listar_contas as listar, criar_conta as criar
-from sqlalchemy.future import select
 
 router = APIRouter()
 
 @router.get("/", response_model=List[ContaResponse])
 async def listar_contas(db: AsyncSession = Depends(get_db)):
-    print("📥 Rota GET /api/v1/contas acessada")
+    # print("📥 Rota GET /api/v1/contas acessada")
     return await listar(db)
 
 @router.post("/", response_model=ContaResponse)
 async def criar_conta(conta: ContaCreate, db: AsyncSession = Depends(get_db)):
-    return await criar(db, conta.dict())
+    return await criar(db, conta)
 
 @router.get("/{conta_id}", response_model=ContaResponse)
 async def obter_conta(conta_id: str, db: AsyncSession = Depends(get_db)):
+    from sqlalchemy.future import select
     result = await db.execute(select(Conta).where(Conta.id == conta_id))
     conta = result.scalars().first()
     if not conta:

@@ -113,17 +113,19 @@ export function ContaForm({ onSubmit, formData, isEditing }: Props) {
         />
       </div>
 
-      <div>
-        <label className="block font-medium">Data de Vencimento</label>
-        <input
-          type="date"
-          name="vencimento"
-          value={form.vencimento}
-          onChange={handleChange}
-          className="w-full border rounded px-3 py-2"
-          required
-        />
-      </div>
+      {!form.recorrente && (
+        <div>
+          <label className="block font-medium">Data de Vencimento</label>
+          <input
+            type="date"
+            name="vencimento"
+            value={form.vencimento}
+            onChange={handleChange}
+            className="w-full border rounded px-3 py-2"
+            required
+          />
+        </div>
+      )}
 
       <div className="flex items-center space-x-2">
         <input
@@ -155,6 +157,31 @@ export function ContaForm({ onSubmit, formData, isEditing }: Props) {
               value={form.fim_periodo}
               onChange={handleChange}
               className="w-full border rounded px-3 py-2"
+            />
+          </div>
+          <div>
+            <label className="block font-medium">Dia do Vencimento</label>
+            <input
+              type="number"
+              name="vencimento"
+              value={new Date(form.vencimento).getDate()}
+              onChange={(e) => {
+                const dia = parseInt(e.target.value, 10);
+                const dataAtual = new Date(form.vencimento);
+                const novoVencimento = new Date(
+                  dataAtual.getFullYear(),
+                  dataAtual.getMonth(),
+                  dia
+                );
+                setForm((prev) => ({
+                  ...prev,
+                  vencimento: novoVencimento.toISOString().split("T")[0],
+                }));
+              }}
+              className="w-full border rounded px-3 py-2"
+              min={1}
+              max={31}
+              required
             />
           </div>
         </div>

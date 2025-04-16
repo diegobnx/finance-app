@@ -12,11 +12,12 @@ class Conta(Base):
     id = Column(String, primary_key=True, default=lambda: str(uuid4()))
     descricao = Column(String, nullable=False)
     valor = Column(Numeric(10, 2), nullable=False)
-    vencimento = Column(Date, nullable=False)
+    vencimento = Column(Date, nullable=True)
     recorrente = Column(Boolean, default=False)
     inicio_periodo = Column(String, nullable=True)
     fim_periodo = Column(String, nullable=True)
     status = Column(String, default="pendente")
+    dia_vencimento = Column(Integer, nullable=True)
 
 from pydantic import BaseModel
 from typing import Optional
@@ -25,11 +26,12 @@ from datetime import date
 class ContaBase(BaseModel):
     descricao: str
     valor: float
-    vencimento: date
+    vencimento: Optional[date] = None
     recorrente: Optional[bool] = False
     inicio_periodo: Optional[str] = None
     fim_periodo: Optional[str] = None
     status: Optional[str] = "pendente"
+    dia_vencimento: Optional[int] = None
 
 class ContaCreate(ContaBase):
     pass

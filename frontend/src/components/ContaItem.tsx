@@ -36,7 +36,12 @@ export function ContaItem({ conta, onUpdate, onDelete, onEdit }: Props) {
   };
 
   const handleSave = () => {
-    if (!editData.descricao || !editData.vencimento || Number(editData.valor.replace(",", ".")) <= 0) return;
+    if (
+      !editData.descricao ||
+      (editData.recorrente === false && !editData.vencimento) ||
+      Number(editData.valor.replace(",", ".")) <= 0
+    )
+      return;
 
     const payload: ContaCreate = {
       descricao: editData.descricao.trim(),
