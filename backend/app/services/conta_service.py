@@ -6,6 +6,9 @@ from app.models.conta import Conta
 from app.schemas.conta import ContaCreate
 from typing import Union, List
 
+async def criar_conta_recorrente():
+    raise NotImplementedError("Função criar_conta_recorrente ainda não implementada.")
+
 async def criar_conta(db: AsyncSession, conta_data: ContaCreate) -> Union[Conta, List[Conta]]:
     conta_dict = conta_data.dict()
     conta_dict["valor"] = Decimal(str(conta_data.valor))
@@ -70,28 +73,3 @@ async def criar_conta(db: AsyncSession, conta_data: ContaCreate) -> Union[Conta,
 async def listar_contas(db: AsyncSession):
     result = await db.execute(select(Conta))
     return result.scalars().all()
-
-# Teste local básico
-if __name__ == "__main__":
-    import asyncio
-    from app.core.db import engine, Base
-    from sqlalchemy.ext.asyncio import AsyncSession
-    from sqlalchemy.orm import sessionmaker
-
-    async def test_criacao():
-        async with engine.begin() as conn:
-            await conn.run_sync(Base.metadata.create_all)
-
-        async_session = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
-        async with async_session() as session:
-            from app.schemas.conta import ContaCreate
-            conta = ContaCreate(
-                descricao="Conta Teste",
-                valor=100.50,
-                vencimento="2025-05-01",
-                recorrente=False
-            )
-            resultado = await criar_conta(session, conta)
-            print(resultado)
-
-    asyncio.run(test_criacao())
