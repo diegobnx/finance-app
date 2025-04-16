@@ -1,4 +1,4 @@
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, validator, root_validator
 from typing import Optional
 from datetime import date
 
@@ -36,7 +36,22 @@ class ContaBase(BaseModel):
         return value
 
 class ContaCreate(ContaBase):
-    pass
+    descricao: str
+    valor: float
+    recorrente: Optional[bool] = False
+    vencimento: Optional[date] = None
+    quantidade_parcelas: Optional[int] = None
+    inicio_periodo: Optional[date] = None
+    fim_periodo: Optional[date] = None
+    status: Optional[str] = "pendente"
+    dia_vencimento: Optional[int] = None
+
+    @root_validator
+    def validate_recorrente_fields(cls, values):
+        if values.get("recorrente"):
+            if not values.get("vencimento") or not values.get("quantidade_parcelas"):
+                raise ValueError("Campos 'vencimento' e 'quantidade_parcelas' são obrigatórios para contas recorrentes.")
+        return values
 
 class ContaResponse(ContaBase):
     id: str

@@ -21,15 +21,21 @@ app = FastAPI(title="Controle Financeiro", version="1.0.0")
 @app.middleware("http")
 async def log_request(request: Request, call_next):
     body = await request.body()
-    logger.debug(f"📥 Request body: {body.decode()}")
+    logger.debug(f"📥 Request body: {body.decode(errors='ignore')}")
+
     response = await call_next(request)
-    
-    response_body = b""
-    async for chunk in response.body_iterator:
-        response_body += chunk
-    logger.debug(f"📤 Response body: {response_body.decode(errors='ignore')}")
-    response = Response(content=response_body, status_code=response.status_code, headers=dict(response.headers), media_type=response.media_type)
-    
+
+    # Intercepta o body da resposta de forma segura
+    if hasattr(response, "body_iterator"):
+        body_bytes = b"".join([chunk async for chunk in response.body_iterator])
+        logger.debug(f"📤 Response body: {body_bytes.decode(errors='ignore')}")
+        return Response(
+            content=body_bytes,
+            status_code=response.status_code,
+            headers=dict(response.headers),
+            media_type=response.media_type
+        )
+
     return response
 
 
