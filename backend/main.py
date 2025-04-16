@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.errors import ServerErrorMiddleware
 
 from app.api.v1 import contas
-from core.db import engine, Base
+from app.core.db import engine, Base
 
 app = FastAPI(title="Controle Financeiro", version="1.0.0")
 
