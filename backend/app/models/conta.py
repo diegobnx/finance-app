@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Boolean, Date, JSON, Float
+from sqlalchemy import Column, Integer, String, Boolean, Date, JSON, Float, Numeric
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.orm import declarative_base
@@ -11,7 +11,7 @@ class Conta(Base):
 
     id = Column(String, primary_key=True, default=lambda: str(uuid4()))
     descricao = Column(String, nullable=False)
-    valor = Column(Float, nullable=False)
+    valor = Column(Numeric(10, 2), nullable=False)
     vencimento = Column(Date, nullable=False)
     recorrente = Column(Boolean, default=False)
     inicio_periodo = Column(String, nullable=True)
