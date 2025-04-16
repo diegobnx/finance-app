@@ -24,7 +24,11 @@ app.add_middleware(
 )
 
 # Rotas
-app.include_router(contas.router, prefix="/api/v1/contas", tags=["Contas"])
+try:
+    app.include_router(contas.router, prefix="/api/v1/contas", tags=["Contas"])
+except Exception as e:
+    import logging
+    logging.exception("Erro ao incluir o router de contas")
 
 
 # Eventos de startup/shutdown
