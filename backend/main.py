@@ -22,6 +22,13 @@ async def log_request(request: Request, call_next):
     body = await request.body()
     logger.debug(f"📥 Request body: {body.decode()}")
     response = await call_next(request)
+    
+    response_body = b""
+    async for chunk in response.body_iterator:
+        response_body += chunk
+    logger.debug(f"📤 Response body: {response_body.decode(errors='ignore')}")
+    response.body_iterator = iter([response_body])
+    
     return response
 
 
