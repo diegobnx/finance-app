@@ -30,7 +30,23 @@ except Exception as e:
 
 
 # Eventos de startup/shutdown
+import asyncio
+from sqlalchemy.exc import OperationalError
+
 @app.on_event("startup")
 async def startup_event():
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+    max_attempts = 10
+    delay = 2  # seconds
+
+    for attempt in range(1, max_attempts + 1):
+        try:
+            async with engine.begin() as conn:
+                await conn.run_sync(Base.metadata.create_all)
+            print("✅ Conectado ao banco com sucesso!")
+            break
+        except OperationalError as e:
+            print(f"⏳ Tentativa {attempt}/{max_attempts} - aguardando banco... {e}")
+            await asyncio.sleep(delay)
+    else:
+        print("❌ Falha ao conectar ao banco após várias tentativas.")
+        raise RuntimeError("Banco de dados indisponível.")
