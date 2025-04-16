@@ -4,7 +4,7 @@ services:
     ports:
       - "5555:8000"
     volumes:
-      - ./backend:/app
+      - ./backend/app:/app
     environment:
       - DATABASE_URL=postgresql+asyncpg://admin:strongpass@postgres:5432/financeapp
       - PYTHONPATH=/app
