@@ -115,10 +115,10 @@ export function ContaItem({ conta, onUpdate, onDelete, onEdit }: Props) {
               inicio_periodo: conta.inicio_periodo ?? "",
               fim_periodo: conta.fim_periodo ?? "",
               status: novoStatus,
-              quantidade_parcelas: conta.quantidade_parcelas ?? null,
-              numero_parcela: conta.numero_parcela ?? null,
-              total_parcelas: conta.total_parcelas ?? null,
-              dia_vencimento: conta.dia_vencimento ?? null,
+              quantidade_parcelas: conta.quantidade_parcelas ?? undefined,
+              numero_parcela: conta.numero_parcela ?? undefined,
+              total_parcelas: conta.total_parcelas ?? undefined,
+              dia_vencimento: conta.dia_vencimento ?? undefined,
             });
           }}
         >
