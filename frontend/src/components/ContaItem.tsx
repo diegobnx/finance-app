@@ -112,9 +112,13 @@ export function ContaItem({ conta, onUpdate, onDelete, onEdit }: Props) {
               valor: conta.valor,
               vencimento: conta.vencimento,
               recorrente: conta.recorrente,
-              inicio_periodo: conta.inicio_periodo,
-              fim_periodo: conta.fim_periodo,
+              inicio_periodo: conta.inicio_periodo ?? "",
+              fim_periodo: conta.fim_periodo ?? "",
               status: novoStatus,
+              quantidade_parcelas: conta.quantidade_parcelas ?? null,
+              numero_parcela: conta.numero_parcela ?? null,
+              total_parcelas: conta.total_parcelas ?? null,
+              dia_vencimento: conta.dia_vencimento ?? null,
             });
           }}
         >
