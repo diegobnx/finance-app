@@ -62,10 +62,10 @@ async def criar_conta(db: AsyncSession, conta_data: ContaCreate) -> Union[Conta,
     else:
         if not conta_data.vencimento:
             raise ValueError("Campo 'vencimento' é obrigatório para contas não recorrentes.")
-        try:
+        if isinstance(conta_data.vencimento, str):
             conta_dict["vencimento"] = datetime.datetime.strptime(conta_data.vencimento, "%Y-%m-%d").date()
-        except ValueError:
-            raise ValueError("Formato de data inválido para vencimento (esperado: YYYY-MM-DD)")
+        else:
+            conta_dict["vencimento"] = conta_data.vencimento
         nova_conta = Conta(**conta_dict)
         db.add(nova_conta)
         await db.commit()
