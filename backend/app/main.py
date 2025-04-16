@@ -1,14 +1,12 @@
 import sys
 import os
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "app")))
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.errors import ServerErrorMiddleware
 
-from app.api.v1 import contas
-from app.core.db import engine, Base
+from api.v1 import contas
+from core.db import engine, Base
 
 app = FastAPI(title="Controle Financeiro", version="1.0.0")
 
