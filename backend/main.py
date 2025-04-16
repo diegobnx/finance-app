@@ -8,6 +8,7 @@ logger = logging.getLogger(__name__)
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.errors import ServerErrorMiddleware
+from starlette.responses import Response
 
 from app.api.v1 import contas
 from app.core.db import engine, Base
@@ -27,7 +28,7 @@ async def log_request(request: Request, call_next):
     async for chunk in response.body_iterator:
         response_body += chunk
     logger.debug(f"📤 Response body: {response_body.decode(errors='ignore')}")
-    response.body_iterator = iter([response_body])
+    response = Response(content=response_body, status_code=response.status_code, headers=dict(response.headers), media_type=response.media_type)
     
     return response
 
