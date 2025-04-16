@@ -24,7 +24,7 @@ from datetime import date
 
 class ContaBase(BaseModel):
     descricao: str
-    valor: str
+    valor: float
     vencimento: date
     recorrente: Optional[bool] = False
     inicio_periodo: Optional[str] = None

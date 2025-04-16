@@ -44,8 +44,12 @@ export default function Home() {
             onDelete={deletar}
             onEdit={() => handleEdit(conta)}
             onMarkAsPaid={() =>
-              atualizar(conta.id, { ...conta, status: "pago" })
+              atualizar(conta.id, {
+                ...conta,
+                status: conta.status === "pago" ? "pendente" : "pago",
+              })
             }
+            buttonText={conta.status === "pago" ? "Marcar como pendente" : "Marcar como pago"}
           />
         ))}
       </div>

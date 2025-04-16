@@ -53,11 +53,19 @@ export function ContaForm({ onSubmit, formData, isEditing }: Props) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    const contaParaEnviar = {
-      ...form,
+    const contaParaEnviar: any = {
+      descricao: form.descricao,
       valor: parseFloat(form.valor).toFixed(2),
-      id: form.id || uuidv4(),
+      vencimento: form.vencimento,
+      recorrente: form.recorrente,
+      inicio_periodo: form.inicio_periodo || null,
+      fim_periodo: form.fim_periodo || null,
+      status: form.status,
     };
+
+    if (!isEditing) {
+      contaParaEnviar.id = uuidv4();
+    }
 
     onSubmit(contaParaEnviar);
 

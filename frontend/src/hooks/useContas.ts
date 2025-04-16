@@ -33,9 +33,19 @@ export function useContas() {
     }
   };
 
-  const atualizar = async (id: string, contaAtualizada: ContaCreate) => {
+  const atualizar = async (id: string, conta: Conta) => {
     try {
-      const response = await axios.put<Conta>(`${BASE_URL}/contas/${id}`, contaAtualizada);
+      const payload = {
+        descricao: conta.descricao,
+        valor: parseFloat(String(conta.valor)),
+        vencimento: conta.vencimento,
+        recorrente: conta.recorrente,
+        inicio_periodo: conta.inicio_periodo || null,
+        fim_periodo: conta.fim_periodo || null,
+        status: conta.status,
+      };
+
+      const response = await axios.put<Conta>(`${BASE_URL}/contas/${id}`, payload);
       setContas(prev => prev.map(c => c.id === id ? response.data : c));
     } catch {
       setError("Erro ao atualizar conta.");
@@ -47,7 +57,15 @@ export function useContas() {
       const conta = contas.find(c => c.id === id);
       if (!conta) throw new Error("Conta não encontrada");
 
-      const contaAtualizada = { ...conta, status: "pago" };
+      const contaAtualizada = {
+        descricao: conta.descricao,
+        valor: parseFloat(String(conta.valor)),
+        vencimento: conta.vencimento,
+        recorrente: conta.recorrente,
+        inicio_periodo: conta.inicio_periodo || null,
+        fim_periodo: conta.fim_periodo || null,
+        status: conta.status === "pago" ? "pendente" : "pago",
+      };
       const response = await axios.put<Conta>(`${BASE_URL}/contas/${id}`, contaAtualizada);
       setContas(prev => prev.map(c => c.id === id ? response.data : c));
     } catch {
