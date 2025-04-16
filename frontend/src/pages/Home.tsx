@@ -8,7 +8,7 @@ export default function Home() {
   const { contas, loading, error, criar, atualizar, deletar } = useContas();
   const [contaEditando, setContaEditando] = useState<Conta | null>(null);
 
-  const handleSubmit = (dados: Conta) => {
+  const handleSubmit = async (dados: Conta) => {
     if (!dados.descricao || !dados.valor || !dados.vencimento || !dados.status) {
       console.error("Dados inválidos:", dados);
       return;
@@ -17,12 +17,9 @@ export default function Home() {
     if (contaEditando && contaEditando.id === dados.id) {
       atualizar(contaEditando.id, dados);
     } else {
-      criar(dados, () => {
-        window.location.reload();
-      });
+      await criar(dados);
+      setContaEditando(null);
     }
-
-    setContaEditando(null);
   };
 
   const handleEdit = (conta: Conta) => {
