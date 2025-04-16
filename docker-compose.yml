@@ -23,7 +23,7 @@ services:
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=strongpass
     volumes:
-      - pg_data:/var/lib/postgresql/data
+      - ./postgres-data:/var/lib/postgresql/data
     restart: unless-stopped
     networks:
       - finance-net
