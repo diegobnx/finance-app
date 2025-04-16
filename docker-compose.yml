@@ -8,8 +8,10 @@ services:
     environment:
       - DATABASE_URL=postgresql+asyncpg://admin:strongpass@postgres:5432/financeapp
       - PYTHONPATH=/app
+      - POSTGRES_HOST_AUTH_METHOD=trust
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     restart: unless-stopped
     networks:
       - finance-net
@@ -27,6 +29,11 @@ services:
     restart: unless-stopped
     networks:
       - finance-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   frontend:
     build:

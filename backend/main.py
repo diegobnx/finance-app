@@ -1,5 +1,9 @@
 import sys
 import os
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -42,11 +46,11 @@ async def startup_event():
         try:
             async with engine.begin() as conn:
                 await conn.run_sync(Base.metadata.create_all)
-            print("✅ Conectado ao banco com sucesso!")
+            logger.info("✅ Conectado ao banco com sucesso!")
             break
         except OperationalError as e:
-            print(f"⏳ Tentativa {attempt}/{max_attempts} - aguardando banco... {e}")
+            logger.warning(f"⏳ Tentativa {attempt}/{max_attempts} - aguardando banco... {e}")
             await asyncio.sleep(delay)
     else:
-        print("❌ Falha ao conectar ao banco após várias tentativas.")
+        logger.error("❌ Falha ao conectar ao banco após várias tentativas.")
         raise RuntimeError("Banco de dados indisponível.")
