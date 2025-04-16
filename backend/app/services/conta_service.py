@@ -6,15 +6,14 @@ from app.models.conta import Conta
 from app.schemas.conta import ContaCreate
 from typing import Union, List
 
-async def criar_conta(db: AsyncSession, conta_data: dict) -> Union[Conta, List[Conta]]:
-    if "valor" in conta_data:
-        conta_data["valor"] = Decimal(str(conta_data["valor"]))
+async def criar_conta(db: AsyncSession, conta_data: ContaCreate) -> Union[Conta, List[Conta]]:
+    conta_dict = conta_data.dict()
+    conta_dict["valor"] = Decimal(str(conta_data.valor))
 
-    dia_vencimento = conta_data.get("dia_vencimento")
-
-    recorrente = conta_data.get("recorrente", False)
-    inicio_periodo = conta_data.get("inicio_periodo")
-    fim_periodo = conta_data.get("fim_periodo")
+    dia_vencimento = conta_data.dia_vencimento
+    recorrente = conta_data.recorrente or False
+    inicio_periodo = conta_data.inicio_periodo
+    fim_periodo = conta_data.fim_periodo
 
     if recorrente and inicio_periodo and fim_periodo:
         try:
@@ -24,10 +23,10 @@ async def criar_conta(db: AsyncSession, conta_data: dict) -> Union[Conta, List[C
             raise ValueError("Formato inválido para inicio_periodo ou fim_periodo (esperado: YYYY-MM-DD)")
 
         if not dia_vencimento:
-            if "vencimento" not in conta_data:
+            if not conta_data.vencimento:
                 raise ValueError("Campo 'vencimento' ou 'dia_vencimento' é obrigatório para contas recorrentes.")
             try:
-                vencimento_ref = datetime.datetime.strptime(conta_data["vencimento"], "%Y-%m-%d")
+                vencimento_ref = datetime.datetime.strptime(conta_data.vencimento, "%Y-%m-%d")
                 vencimento_dia = vencimento_ref.day
             except ValueError:
                 raise ValueError("Formato de data inválido para vencimento (esperado: YYYY-MM-DD)")
@@ -35,24 +34,19 @@ async def criar_conta(db: AsyncSession, conta_data: dict) -> Union[Conta, List[C
             vencimento_dia = int(dia_vencimento)
 
         contas = []
-
         while inicio <= fim:
-            # Ajusta o dia de vencimento considerando meses com menos dias
             try:
                 vencimento = datetime.date(inicio.year, inicio.month, vencimento_dia)
             except ValueError:
-                # Se o mês não tiver o dia solicitado, usa o último dia do mês
                 next_month = inicio.replace(day=28) + datetime.timedelta(days=4)
                 last_day = (next_month - datetime.timedelta(days=next_month.day)).day
                 vencimento = datetime.date(inicio.year, inicio.month, last_day)
 
-            conta_data_copy = conta_data.copy()
+            conta_data_copy = conta_dict.copy()
             conta_data_copy["vencimento"] = vencimento
             nova_conta = Conta(**conta_data_copy)
             db.add(nova_conta)
             contas.append(nova_conta)
-
-            # Avança para o próximo mês
             inicio = (inicio.replace(day=28) + datetime.timedelta(days=4)).replace(day=1)
 
         await db.commit()
@@ -61,20 +55,17 @@ async def criar_conta(db: AsyncSession, conta_data: dict) -> Union[Conta, List[C
         return contas
 
     else:
-        if "vencimento" not in conta_data:
+        if not conta_data.vencimento:
             raise ValueError("Campo 'vencimento' é obrigatório para contas não recorrentes.")
         try:
-            conta_data["vencimento"] = datetime.datetime.strptime(conta_data["vencimento"], "%Y-%m-%d").date()
+            conta_dict["vencimento"] = datetime.datetime.strptime(conta_data.vencimento, "%Y-%m-%d").date()
         except ValueError:
             raise ValueError("Formato de data inválido para vencimento (esperado: YYYY-MM-DD)")
-        nova_conta = Conta(**conta_data)
+        nova_conta = Conta(**conta_dict)
         db.add(nova_conta)
         await db.commit()
         await db.refresh(nova_conta)
         return nova_conta
-
-async def criar_conta_recorrente(db: AsyncSession, conta_data: ContaCreate) -> List[Conta]:
-    return await criar_conta(db, conta_data.dict())
 
 async def listar_contas(db: AsyncSession):
     result = await db.execute(select(Conta))
