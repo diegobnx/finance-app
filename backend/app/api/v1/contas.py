@@ -1,10 +1,10 @@
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List
-from app.core.db import get_db
-from app.models.conta import Conta
-from app.schemas.conta import ContaCreate, ContaResponse
-from app.services.conta_service import listar_contas as listar, criar_conta as criar, criar_conta_recorrente
+from core.db import get_db
+from models.conta import Conta
+from schemas.conta import ContaCreate, ContaResponse
+from services.conta_service import listar_contas as listar, criar_conta as criar, criar_conta_recorrente
 
 router = APIRouter()
 
