@@ -38,6 +38,7 @@ async def criar_conta_recorrente(db: AsyncSession, conta_data: ContaCreate) -> L
         conta_data_copy = conta_dict.copy()
         conta_data_copy["numero_parcela"] = i + 1
         conta_data_copy["total_parcelas"] = conta_data.quantidade_parcelas
+        conta_data_copy["quantidade_parcelas"] = conta_data.quantidade_parcelas
         
         conta_data_copy["vencimento"] = vencimento
         conta_data_copy.pop("dia_vencimento", None)
