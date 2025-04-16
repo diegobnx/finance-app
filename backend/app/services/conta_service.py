@@ -3,7 +3,7 @@ from decimal import Decimal
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from app.models.conta import Conta
-from app.schemas.conta import ContaCreate
+from ..schemas.conta import ContaCreate
 from typing import Union, List
 
 async def criar_conta(db: AsyncSession, conta_data: dict) -> Union[Conta, List[Conta]]:
