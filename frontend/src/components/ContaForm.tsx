@@ -1,16 +1,16 @@
 import { useState, useEffect } from "react";
 import React from "react";
-import { ContaCreate } from "../types/conta";
+import { Conta } from "../types/conta";
 import { v4 as uuidv4 } from "uuid";
 
 interface Props {
-  onSubmit: (data: ContaCreate) => void;
-  formData?: ContaCreate;
+  onSubmit: (data: Conta) => void;
+  formData?: Conta;
   isEditing?: boolean;
 }
 
 export function ContaForm({ onSubmit, formData, isEditing }: Props) {
-  const [form, setForm] = useState<ContaCreate>(
+  const [form, setForm] = useState<Conta>(
     isEditing && formData
       ? formData
       : {
@@ -21,7 +21,8 @@ export function ContaForm({ onSubmit, formData, isEditing }: Props) {
           total_parcelas: undefined,
           status: "pendente",
           dia_vencimento: undefined,
-          quantidade_parcelas: undefined
+          quantidade_parcelas: undefined,
+          id: uuidv4()
         }
   );
 
@@ -54,7 +55,7 @@ export function ContaForm({ onSubmit, formData, isEditing }: Props) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const contaParaEnviar: any = {
+    const contaParaEnviar: Conta = {
       ...form,
       valor: parseFloat(form.valor).toFixed(2),
       quantidade_parcelas: form.recorrente ? Number(form.total_parcelas) || 1 : undefined,
@@ -82,7 +83,8 @@ export function ContaForm({ onSubmit, formData, isEditing }: Props) {
       total_parcelas: undefined,
       status: "pendente",
       dia_vencimento: undefined,
-      quantidade_parcelas: undefined
+      quantidade_parcelas: undefined,
+      id: uuidv4()
     });
   };
 
