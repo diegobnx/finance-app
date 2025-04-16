@@ -79,13 +79,15 @@ export function ContaItem({ conta, onUpdate, onDelete, onEdit }: Props) {
         <h2 className="text-lg font-semibold">{descricao}</h2>
         <p className="text-gray-500">
           Vencimento:{" "}
-          {new Date(new Date(vencimento).getTime() + 24 * 60 * 60 * 1000).toLocaleDateString()}
+          {vencimento ? new Date(new Date(vencimento).getTime() + 24 * 60 * 60 * 1000).toLocaleDateString() : "Sem vencimento"}
         </p>
         <p className="text-gray-800 font-bold">
-          {new Intl.NumberFormat("pt-BR", {
-            style: "currency",
-            currency: "BRL",
-          }).format(Number(valor))}
+          {valor
+            ? new Intl.NumberFormat("pt-BR", {
+                style: "currency",
+                currency: "BRL",
+              }).format(Number(valor))
+            : "R$ 0,00"}
         </p>
         <p
           className={`inline-block px-2 py-1 text-sm rounded ${
@@ -98,6 +100,11 @@ export function ContaItem({ conta, onUpdate, onDelete, onEdit }: Props) {
         >
           {status}
         </p>
+        {conta.total_parcelas && conta.numero_parcela && (
+          <p className="text-sm text-gray-600">
+            Parcela {conta.numero_parcela} de {conta.total_parcelas}
+          </p>
+        )}
       </div>
       <div className="space-x-2 flex">
         <button

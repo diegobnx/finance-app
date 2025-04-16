@@ -12,6 +12,8 @@ class ContaBase(BaseModel):
     fim_periodo: Optional[date] = None
     status: Optional[str] = "pendente"
     dia_vencimento: Optional[int] = None
+    numero_parcela: Optional[int] = None
+    total_parcelas: Optional[int] = None
 
     @validator("vencimento", "inicio_periodo", "fim_periodo", pre=True)
     def parse_date(cls, value):
@@ -38,6 +40,8 @@ class ContaCreate(ContaBase):
 
 class ContaResponse(ContaBase):
     id: str
+    numero_parcela: Optional[int] = None
+    total_parcelas: Optional[int] = None
 
     class Config:
         from_attributes = True

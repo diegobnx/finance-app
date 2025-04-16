@@ -22,3 +22,6 @@ class Conta(Base):
     fim_periodo = Column(Date, nullable=True)
     status = Column(String, default="pendente")
     dia_vencimento = Column(Integer, nullable=True)
+    numero_parcela = Column(Integer, nullable=True)
+    total_parcelas = Column(Integer, nullable=True)
+    __repr__ = lambda self: f"&lt;Conta {self.descricao}, Parcela {self.numero_parcela}/{self.total_parcelas}&gt;"
