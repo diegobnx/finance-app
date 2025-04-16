@@ -18,6 +18,8 @@ async def listar_contas(db: AsyncSession = Depends(get_db)):
 @router.post("/", response_model=Union[ContaResponseParcela, List[ContaResponseParcela]])
 async def criar_conta(conta: ContaCreate, db: AsyncSession = Depends(get_db)):
     if conta.recorrente:
+        if not conta.quantidade_parcelas or not conta.vencimento:
+            raise HTTPException(status_code=400, detail="Campos 'quantidade_parcelas' e 'vencimento' são obrigatórios para contas recorrentes.")
         return await criar_conta_recorrente(db, conta)
     return await criar(db, conta)
 

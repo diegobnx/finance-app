@@ -53,6 +53,8 @@ async def criar_conta_recorrente(db: AsyncSession, conta_data: ContaCreate) -> L
 async def criar_conta(db: AsyncSession, conta_data: ContaCreate) -> Union[Conta, List[Conta]]:
     conta_dict = conta_data.model_dump()
     conta_dict["valor"] = Decimal(str(conta_data.valor))
+    conta_dict.pop("quantidade_parcelas", None)
+    conta_dict.pop("dia_vencimento", None)
 
     dia_vencimento = conta_data.dia_vencimento
     recorrente = conta_data.recorrente or False
