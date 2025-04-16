@@ -40,17 +40,13 @@ export function ContaItem({ conta, onUpdate, onDelete, onEdit }: Props) {
 
     const payload: any = {
       descricao: editData.descricao,
-      valor: Number(editData.valor.replace(",", ".")),
+      valor: parseFloat(editData.valor.replace(/\./g, "").replace(",", ".")),
       vencimento: new Date(editData.vencimento).toISOString().split("T")[0],
       recorrente: editData.recorrente,
-      status: editData.status || "pendente",
+      status: editData.status || "",
+      inicio_periodo: editData.inicio_periodo || "",
+      fim_periodo: editData.fim_periodo || "",
     };
-
-    if (editData.inicio_periodo && editData.inicio_periodo.trim() !== "")
-      payload.inicio_periodo = editData.inicio_periodo;
-
-    if (editData.fim_periodo && editData.fim_periodo.trim() !== "")
-      payload.fim_periodo = editData.fim_periodo;
 
     console.log("Enviando payload corrigido:", payload);
 
