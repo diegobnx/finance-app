@@ -6,7 +6,7 @@ from app.models.conta import Conta
 from app.schemas.conta import ContaCreate
 from typing import Union, List
 
-async def criar_conta_recorrente():
+async def criar_conta_recorrente(*args, **kwargs):
     raise NotImplementedError("Função criar_conta_recorrente ainda não implementada.")
 
 async def criar_conta(db: AsyncSession, conta_data: ContaCreate) -> Union[Conta, List[Conta]]:
