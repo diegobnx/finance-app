@@ -6,7 +6,7 @@ from app.core.db import get_db
 from app.models.conta import Conta
 from app.schemas.conta import ContaCreate, ContaResponse
 from app.services.conta_service import listar_contas as listar, criar_conta as criar
-from app.services.conta_service import criar_contas_parceladas
+from app.services.conta_service import criar_conta_recorrente
 
 router = APIRouter()
 
@@ -18,7 +18,7 @@ async def listar_contas(db: AsyncSession = Depends(get_db)):
 @router.post("/", response_model=Union[ContaResponse, List[ContaResponse]])
 async def criar_conta(conta: ContaCreate, db: AsyncSession = Depends(get_db)):
     if conta.recorrente:
-        return await criar_contas_parceladas(db, conta)
+        return await criar_conta_recorrente(db, conta)
     return await criar(db, conta)
 
 @router.get("/{conta_id}", response_model=ContaResponse)
