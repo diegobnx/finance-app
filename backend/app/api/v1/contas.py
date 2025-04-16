@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List
 from core.db import get_db
 from models.conta import Conta
-from schemas.conta import ContaCreate, ContaResponse
+from app.schemas.conta import ContaCreate, ContaResponse
 from services.conta_service import listar_contas as listar, criar_conta as criar, criar_conta_recorrente
 
 router = APIRouter()
