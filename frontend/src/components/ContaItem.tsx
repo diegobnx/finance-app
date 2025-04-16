@@ -88,11 +88,6 @@ export function ContaItem({ conta, onUpdate, onDelete, onEdit }: Props) {
               }).format(Number(conta.valor))
             : "R$ 0,00"}
         </p>
-        {(conta.numero_parcela !== undefined && conta.total_parcelas !== undefined) && (
-          <p className="text-sm text-gray-600">
-            Parcela {conta.numero_parcela} de {conta.total_parcelas}
-          </p>
-        )}
         <p
           className={`inline-block px-2 py-1 text-sm rounded ${
             conta.status === "paga"

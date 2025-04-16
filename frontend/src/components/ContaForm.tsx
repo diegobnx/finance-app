@@ -53,14 +53,12 @@ export function ContaForm({ onSubmit, formData, isEditing }: Props) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
+    const { quantidade_parcelas, ...rest } = form;
     const contaParaEnviar: any = {
-      descricao: form.descricao,
-      valor: parseFloat(form.valor).toFixed(2),
-      vencimento: form.vencimento,
-      recorrente: form.recorrente,
-      total_parcelas: form.total_parcelas || null,
-      status: form.status,
-      dia_vencimento: form.dia_vencimento || null
+      ...rest,
+      valor: parseFloat(rest.valor).toFixed(2),
+      total_parcelas: rest.total_parcelas || null,
+      dia_vencimento: rest.dia_vencimento || null
     };
 
     if (!isEditing) {
