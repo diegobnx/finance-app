@@ -1,5 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
 from typing import List
 from app.core.db import get_db
 from app.models.conta import Conta
@@ -21,7 +22,6 @@ async def criar_conta(conta: ContaCreate, db: AsyncSession = Depends(get_db)):
 
 @router.get("/{conta_id}", response_model=ContaResponse)
 async def obter_conta(conta_id: str, db: AsyncSession = Depends(get_db)):
-    from sqlalchemy.future import select
     result = await db.execute(select(Conta).where(Conta.id == conta_id))
     conta = result.scalars().first()
     if not conta:
