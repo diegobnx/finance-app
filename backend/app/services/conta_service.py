@@ -10,38 +10,37 @@ async def criar_conta_recorrente(db: AsyncSession, conta_data: ContaCreate) -> L
     conta_dict = conta_data.dict()
     conta_dict["valor"] = Decimal(str(conta_data.valor))
 
+    if not conta_data.quantidade_parcelas or not conta_data.vencimento:
+        raise ValueError("Campos 'quantidade_parcelas' e 'vencimento' são obrigatórios para contas recorrentes.")
     try:
-        inicio = datetime.datetime.strptime(conta_data.inicio_periodo, "%Y-%m-%d").date()
-        fim = datetime.datetime.strptime(conta_data.fim_periodo, "%Y-%m-%d").date()
+        vencimento_ref = datetime.datetime.strptime(conta_data.vencimento, "%Y-%m-%d")
     except ValueError:
-        raise ValueError("Formato inválido para inicio_periodo ou fim_periodo (esperado: YYYY-MM-DD)")
+        raise ValueError("Formato de data inválido para vencimento (esperado: YYYY-MM-DD)")
 
-    if not conta_data.dia_vencimento:
-        if not conta_data.vencimento:
-            raise ValueError("Campo 'vencimento' ou 'dia_vencimento' é obrigatório para contas recorrentes.")
-        try:
-            vencimento_ref = datetime.datetime.strptime(conta_data.vencimento, "%Y-%m-%d")
-            vencimento_dia = vencimento_ref.day
-        except ValueError:
-            raise ValueError("Formato de data inválido para vencimento (esperado: YYYY-MM-DD)")
-    else:
-        vencimento_dia = int(conta_data.dia_vencimento)
+    vencimento_dia = conta_data.dia_vencimento if conta_data.dia_vencimento is not None else vencimento_ref.day
+
+    if not (1 <= vencimento_dia <= 31):
+        raise ValueError("O campo 'dia_vencimento' deve estar entre 1 e 31.")
 
     contas = []
-    while inicio <= fim:
+    for i in range(conta_data.quantidade_parcelas):
+        mes = vencimento_ref.month + i
+        ano = vencimento_ref.year + (mes - 1) // 12
+        mes = (mes - 1) % 12 + 1
         try:
-            vencimento = datetime.date(inicio.year, inicio.month, vencimento_dia)
+            vencimento = datetime.date(ano, mes, vencimento_dia)
         except ValueError:
-            next_month = inicio.replace(day=28) + datetime.timedelta(days=4)
+            next_month = datetime.date(ano, mes, 28) + datetime.timedelta(days=4)
             last_day = (next_month - datetime.timedelta(days=next_month.day)).day
-            vencimento = datetime.date(inicio.year, inicio.month, last_day)
+            vencimento = datetime.date(ano, mes, last_day)
 
         conta_data_copy = conta_dict.copy()
         conta_data_copy["vencimento"] = vencimento
+        conta_data_copy.pop("quantidade_parcelas", None)
+        conta_data_copy.pop("dia_vencimento", None)
         nova_conta = Conta(**conta_data_copy)
         db.add(nova_conta)
         contas.append(nova_conta)
-        inicio = (inicio.replace(day=28) + datetime.timedelta(days=4)).replace(day=1)
 
     await db.commit()
     for conta in contas:
@@ -54,10 +53,8 @@ async def criar_conta(db: AsyncSession, conta_data: ContaCreate) -> Union[Conta,
 
     dia_vencimento = conta_data.dia_vencimento
     recorrente = conta_data.recorrente or False
-    inicio_periodo = conta_data.inicio_periodo
-    fim_periodo = conta_data.fim_periodo
 
-    if recorrente and inicio_periodo and fim_periodo:
+    if recorrente and conta_data.quantidade_parcelas:
         return await criar_conta_recorrente(db, conta_data)
     else:
         if not conta_data.vencimento:

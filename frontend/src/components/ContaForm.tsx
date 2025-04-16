@@ -18,8 +18,7 @@ export function ContaForm({ onSubmit, formData, isEditing }: Props) {
           valor: "0",
           vencimento: new Date().toISOString().split("T")[0],
           recorrente: false,
-          inicio_periodo: "",
-          fim_periodo: "",
+          quantidade_parcelas: undefined,
           status: "pendente",
           dia_vencimento: undefined
         }
@@ -59,8 +58,7 @@ export function ContaForm({ onSubmit, formData, isEditing }: Props) {
       valor: parseFloat(form.valor).toFixed(2),
       vencimento: form.vencimento,
       recorrente: form.recorrente,
-      inicio_periodo: form.inicio_periodo || null,
-      fim_periodo: form.fim_periodo || null,
+      quantidade_parcelas: form.quantidade_parcelas || null,
       status: form.status,
       dia_vencimento: form.dia_vencimento || null
     };
@@ -76,8 +74,7 @@ export function ContaForm({ onSubmit, formData, isEditing }: Props) {
       valor: "0",
       vencimento: new Date().toISOString().split("T")[0],
       recorrente: false,
-      inicio_periodo: "",
-      fim_periodo: "",
+      quantidade_parcelas: undefined,
       status: "pendente",
       dia_vencimento: undefined
     });
@@ -141,40 +138,28 @@ export function ContaForm({ onSubmit, formData, isEditing }: Props) {
       </div>
 
       {form.recorrente && (
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block font-medium">Início</label>
-            <input
-              type="month"
-              name="inicio_periodo"
-              value={form.inicio_periodo}
-              onChange={handleChange}
-              className="w-full border rounded px-3 py-2"
-            />
-          </div>
-          <div>
-            <label className="block font-medium">Fim</label>
-            <input
-              type="month"
-              name="fim_periodo"
-              value={form.fim_periodo}
-              onChange={handleChange}
-              className="w-full border rounded px-3 py-2"
-            />
-          </div>
-          <div>
-            <label className="block font-medium">Dia do Vencimento</label>
-            <input
-              type="number"
-              name="dia_vencimento"
-              value={form.dia_vencimento || ""}
-              onChange={handleChange}
-              className="w-full border rounded px-3 py-2"
-              min={1}
-              max={31}
-              required
-            />
-          </div>
+        <div>
+          <label className="block font-medium">Parcelas (número de meses)</label>
+          <input
+            type="number"
+            name="quantidade_parcelas"
+            value={form.quantidade_parcelas || ""}
+            onChange={handleChange}
+            className="w-full border rounded px-3 py-2"
+            min={1}
+            required
+          />
+          <label className="block font-medium">Dia fixo do vencimento (1 a 31)</label>
+          <input
+            type="number"
+            name="dia_vencimento"
+            value={form.dia_vencimento || ""}
+            onChange={handleChange}
+            className="w-full border rounded px-3 py-2"
+            min={1}
+            max={31}
+            required
+          />
         </div>
       )}
 
