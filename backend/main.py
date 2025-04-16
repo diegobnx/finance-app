@@ -14,7 +14,7 @@ app = FastAPI(title="Controle Financeiro", version="1.0.0")
 # CORS (ajustar conforme necessidade do frontend)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # ou ["http://localhost:3000"]
+    allow_origins=["http://192.168.0.110:3000"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
