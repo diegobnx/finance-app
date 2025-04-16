@@ -8,6 +8,7 @@ from typing import Union, List
 
 async def criar_conta_recorrente(db: AsyncSession, conta_data: ContaCreate) -> List[Conta]:
     conta_dict = conta_data.model_dump()
+    print("🧪 Debug dict recebido:", conta_dict)
     conta_dict["valor"] = Decimal(str(conta_data.valor))
 
     if not conta_data.quantidade_parcelas or not conta_data.vencimento:
@@ -53,7 +54,7 @@ async def criar_conta_recorrente(db: AsyncSession, conta_data: ContaCreate) -> L
 async def criar_conta(db: AsyncSession, conta_data: ContaCreate) -> Union[Conta, List[Conta]]:
     conta_dict = conta_data.model_dump()
     conta_dict["valor"] = Decimal(str(conta_data.valor))
-    conta_dict.pop("quantidade_parcelas", None)
+    # conta_dict.pop("quantidade_parcelas", None)  # Não remover, pois é necessário para recorrentes
     conta_dict.pop("dia_vencimento", None)
 
     dia_vencimento = conta_data.dia_vencimento
