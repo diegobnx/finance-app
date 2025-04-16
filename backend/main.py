@@ -12,7 +12,18 @@ from starlette.middleware.errors import ServerErrorMiddleware
 from app.api.v1 import contas
 from app.core.db import engine, Base
 
+from fastapi.requests import Request
+
 app = FastAPI(title="Controle Financeiro", version="1.0.0")
+
+
+@app.middleware("http")
+async def log_request(request: Request, call_next):
+    body = await request.body()
+    logger.debug(f"📥 Request body: {body.decode()}")
+    response = await call_next(request)
+    return response
+
 
 app.add_middleware(ServerErrorMiddleware, debug=True)
 
@@ -30,12 +41,14 @@ try:
     app.include_router(contas.router, prefix="/api/v1/contas", tags=["Contas"])
 except Exception as e:
     import logging
+
     logging.exception("Erro ao incluir o router de contas")
 
 
 # Eventos de startup/shutdown
 import asyncio
 from sqlalchemy.exc import OperationalError
+
 
 @app.on_event("startup")
 async def startup_event():
@@ -49,7 +62,9 @@ async def startup_event():
             logger.info("✅ Conectado ao banco com sucesso!")
             break
         except OperationalError as e:
-            logger.warning(f"⏳ Tentativa {attempt}/{max_attempts} - aguardando banco... {e}")
+            logger.warning(
+                f"⏳ Tentativa {attempt}/{max_attempts} - aguardando banco... {e}"
+            )
             await asyncio.sleep(delay)
     else:
         logger.error("❌ Falha ao conectar ao banco após várias tentativas.")
