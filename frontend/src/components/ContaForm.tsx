@@ -74,8 +74,6 @@ export function ContaForm({ onSubmit, formData, isEditing }: Props) {
       console.log("Conta adicionada:", resultado);
     }
 
-    window.location.reload();
-
     setForm({
       descricao: "",
       valor: "0",

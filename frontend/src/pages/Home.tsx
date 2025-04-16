@@ -17,7 +17,9 @@ export default function Home() {
     if (contaEditando && contaEditando.id === dados.id) {
       atualizar(contaEditando.id, dados);
     } else {
-      criar(dados);
+      criar(dados, () => {
+        window.location.reload();
+      });
     }
 
     setContaEditando(null);
