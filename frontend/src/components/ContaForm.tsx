@@ -20,7 +20,8 @@ export function ContaForm({ onSubmit, formData, isEditing }: Props) {
           recorrente: false,
           inicio_periodo: "",
           fim_periodo: "",
-          status: "pendente"
+          status: "pendente",
+          dia_vencimento: undefined
         }
   );
 
@@ -61,6 +62,7 @@ export function ContaForm({ onSubmit, formData, isEditing }: Props) {
       inicio_periodo: form.inicio_periodo || null,
       fim_periodo: form.fim_periodo || null,
       status: form.status,
+      dia_vencimento: form.dia_vencimento || null
     };
 
     if (!isEditing) {
@@ -76,7 +78,8 @@ export function ContaForm({ onSubmit, formData, isEditing }: Props) {
       recorrente: false,
       inicio_periodo: "",
       fim_periodo: "",
-      status: "pendente"
+      status: "pendente",
+      dia_vencimento: undefined
     });
   };
 
@@ -163,21 +166,9 @@ export function ContaForm({ onSubmit, formData, isEditing }: Props) {
             <label className="block font-medium">Dia do Vencimento</label>
             <input
               type="number"
-              name="vencimento"
-              value={new Date(form.vencimento).getDate()}
-              onChange={(e) => {
-                const dia = parseInt(e.target.value, 10);
-                const dataAtual = new Date(form.vencimento);
-                const novoVencimento = new Date(
-                  dataAtual.getFullYear(),
-                  dataAtual.getMonth(),
-                  dia
-                );
-                setForm((prev) => ({
-                  ...prev,
-                  vencimento: novoVencimento.toISOString().split("T")[0],
-                }));
-              }}
+              name="dia_vencimento"
+              value={form.dia_vencimento || ""}
+              onChange={handleChange}
               className="w-full border rounded px-3 py-2"
               min={1}
               max={31}
