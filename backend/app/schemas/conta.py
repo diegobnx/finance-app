@@ -7,7 +7,7 @@ class ContaBase(BaseModel):
     valor: float
     vencimento: Optional[date] = None
     recorrente: Optional[bool] = False
-    quantidade_parcelas: Optional[int] = None
+    quantidade_parcelas: Optional[int] = None  # Usada apenas quando recorrente=True e inicio_periodo/fim_periodo não fornecidos
     inicio_periodo: Optional[date] = None
     fim_periodo: Optional[date] = None
     status: Optional[str] = "pendente"
@@ -24,6 +24,13 @@ class ContaBase(BaseModel):
     def validate_dia_vencimento(cls, value):
         if value is not None and not (1 <= value <= 31):
             raise ValueError("O dia_vencimento deve estar entre 1 e 31.")
+        return value
+
+    @validator("quantidade_parcelas")
+    def validate_quantidade_parcelas(cls, value, values):
+        if value is not None:
+            if value <= 0:
+                raise ValueError("A quantidade de parcelas deve ser maior que zero.")
         return value
 
 class ContaCreate(ContaBase):

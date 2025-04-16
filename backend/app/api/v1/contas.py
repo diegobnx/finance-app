@@ -5,7 +5,7 @@ from typing import List, Union
 from app.core.db import get_db
 from app.models.conta import Conta
 from app.schemas.conta import ContaCreate, ContaResponse
-from app.services.conta_service import listar_contas as listar, criar_conta as criar, criar_contas_parceladas
+from app.services.conta_service import listar_contas as listar, criar_conta as criar
 
 router = APIRouter()
 

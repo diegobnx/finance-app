@@ -7,7 +7,7 @@ from app.schemas.conta import ContaCreate
 from typing import Union, List
 
 async def criar_conta_recorrente(db: AsyncSession, conta_data: ContaCreate) -> List[Conta]:
-    conta_dict = conta_data.dict()
+    conta_dict = conta_data.model_dump()
     conta_dict["valor"] = Decimal(str(conta_data.valor))
 
     if not conta_data.quantidade_parcelas or not conta_data.vencimento:
@@ -48,7 +48,7 @@ async def criar_conta_recorrente(db: AsyncSession, conta_data: ContaCreate) -> L
     return contas
 
 async def criar_conta(db: AsyncSession, conta_data: ContaCreate) -> Union[Conta, List[Conta]]:
-    conta_dict = conta_data.dict()
+    conta_dict = conta_data.model_dump()
     conta_dict["valor"] = Decimal(str(conta_data.valor))
 
     dia_vencimento = conta_data.dia_vencimento
