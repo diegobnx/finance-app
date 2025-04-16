@@ -18,7 +18,7 @@ export function ContaForm({ onSubmit, formData, isEditing }: Props) {
           valor: "0",
           vencimento: new Date().toISOString().split("T")[0],
           recorrente: false,
-          quantidade_parcelas: undefined,
+          total_parcelas: undefined,
           status: "pendente",
           dia_vencimento: undefined
         }
@@ -58,7 +58,7 @@ export function ContaForm({ onSubmit, formData, isEditing }: Props) {
       valor: parseFloat(form.valor).toFixed(2),
       vencimento: form.vencimento,
       recorrente: form.recorrente,
-      quantidade_parcelas: form.quantidade_parcelas || null,
+      total_parcelas: form.total_parcelas || null,
       status: form.status,
       dia_vencimento: form.dia_vencimento || null
     };
@@ -74,7 +74,7 @@ export function ContaForm({ onSubmit, formData, isEditing }: Props) {
       valor: "0",
       vencimento: new Date().toISOString().split("T")[0],
       recorrente: false,
-      quantidade_parcelas: undefined,
+      total_parcelas: undefined,
       status: "pendente",
       dia_vencimento: undefined
     });
@@ -142,8 +142,8 @@ export function ContaForm({ onSubmit, formData, isEditing }: Props) {
           <label className="block font-medium">Parcelas (número de meses)</label>
           <input
             type="number"
-            name="quantidade_parcelas"
-            value={form.quantidade_parcelas || ""}
+            name="total_parcelas"
+            value={form.total_parcelas || ""}
             onChange={handleChange}
             className="w-full border rounded px-3 py-2"
             min={1}

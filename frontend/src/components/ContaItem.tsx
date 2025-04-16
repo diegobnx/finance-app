@@ -88,6 +88,11 @@ export function ContaItem({ conta, onUpdate, onDelete, onEdit }: Props) {
               }).format(Number(conta.valor))
             : "R$ 0,00"}
         </p>
+        {(conta.numero_parcela !== undefined && conta.total_parcelas !== undefined) && (
+          <p className="text-sm text-gray-600">
+            Parcela {conta.numero_parcela} de {conta.total_parcelas}
+          </p>
+        )}
         <p
           className={`inline-block px-2 py-1 text-sm rounded ${
             conta.status === "paga"
@@ -99,16 +104,6 @@ export function ContaItem({ conta, onUpdate, onDelete, onEdit }: Props) {
         >
           {conta.status}
         </p>
-        {typeof conta.numero_parcela === "number" && typeof conta.total_parcelas === "number" && (
-          <p className="text-sm text-gray-600">
-            Parcela {conta.numero_parcela} de {conta.total_parcelas}
-          </p>
-        )}
-        {conta.total_parcelas && conta.numero_parcela && (
-          <p className="text-sm text-gray-600">
-            Parcela {conta.numero_parcela} de {conta.total_parcelas}
-          </p>
-        )}
       </div>
       <div className="space-x-2 flex">
         <button
