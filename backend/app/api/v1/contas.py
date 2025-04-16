@@ -4,7 +4,7 @@ from sqlalchemy.future import select
 from typing import List, Union
 from app.core.db import get_db
 from app.models.conta import Conta
-from app.schemas.conta import ContaCreate, ContaResponse, ContaResponseParcela
+from app.schemas.conta import ContaCreate, ContaResponseParcela
 from app.services.conta_service import listar_contas as listar, criar_conta as criar
 from app.services.conta_service import criar_conta_recorrente
 

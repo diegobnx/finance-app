@@ -100,6 +100,11 @@ export function ContaItem({ conta, onUpdate, onDelete, onEdit }: Props) {
         >
           {status}
         </p>
+        {typeof conta.numero_parcela === "number" && typeof conta.total_parcelas === "number" && (
+          <p className="text-sm text-gray-600">
+            Parcela {conta.numero_parcela} de {conta.total_parcelas}
+          </p>
+        )}
         {conta.total_parcelas && conta.numero_parcela && (
           <p className="text-sm text-gray-600">
             Parcela {conta.numero_parcela} de {conta.total_parcelas}

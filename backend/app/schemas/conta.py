@@ -47,5 +47,4 @@ class ContaResponse(ContaBase):
         from_attributes = True
 
 class ContaResponseParcela(ContaResponse):
-    numero_parcela: Optional[int]
-    total_parcelas: Optional[int]
+    pass
