@@ -76,7 +76,9 @@ export function ContaForm({ onSubmit, formData, isEditing }: Props) {
       valor: valorNumero,
       quantidade_parcelas: parcelasNumero,
       dia_vencimento: diaNumero,
-      vencimento: form.recorrente ? undefined : form.vencimento,
+      vencimento: form.recorrente
+        ? new Date().toISOString().split("T")[0]
+        : (form.vencimento || new Date().toISOString().split("T")[0]),
     };
 
     if (!isEditing) payload.id = uuidv4();
@@ -184,7 +186,6 @@ export function ContaForm({ onSubmit, formData, isEditing }: Props) {
             onChange={handleChange}
             className="w-full border rounded px-3 py-2"
             min={1}
-            required
           />
           <label className="block font-medium">
             Dia fixo do vencimento (1 a 31) — opcional
