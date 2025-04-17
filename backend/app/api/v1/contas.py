@@ -41,6 +41,7 @@ async def atualizar_conta(conta_id: str, conta: ContaUpdate, db: AsyncSession = 
     if not db_conta:
         raise HTTPException(status_code=404, detail="Conta não encontrada")
 
+    print("🛠 Atualizando conta:", conta.dict())
     for key, value in conta.dict().items():
         if key not in ("id", "_id") and value is not None:
             setattr(db_conta, key, value)

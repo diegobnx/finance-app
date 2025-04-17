@@ -64,6 +64,9 @@ export function ContaItem({ conta, onUpdate, onDelete, onEdit }: Props) {
       dia_vencimento: editData.recorrente
         ? editData.dia_vencimento ?? undefined
         : undefined,
+      quantidade_parcelas: conta.quantidade_parcelas ?? undefined,
+      numero_parcela: conta.numero_parcela ?? undefined,
+      total_parcelas: conta.total_parcelas ?? undefined,
     };
 
     console.log("Enviando payload corrigido:", payload);
