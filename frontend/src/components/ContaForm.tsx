@@ -46,6 +46,20 @@ export function ContaForm({ onSubmit, formData, isEditing }: Props) {
     e.preventDefault();
     setErro(null);
 
+    let parcelasNumero: number | undefined = undefined;
+    let diaNumero: number | undefined = undefined;
+
+    if (form.recorrente) {
+      parcelasNumero =
+        form.quantidade_parcelas && Number(form.quantidade_parcelas) > 0
+          ? Number(form.quantidade_parcelas)
+          : 1;
+
+      diaNumero = form.dia_vencimento
+        ? Number(form.dia_vencimento)
+        : undefined;
+    }
+
     const valorNumero = parseFloat(String(form.valor).replace(",", "."));
     if (!form.descricao.trim() || isNaN(valorNumero) || valorNumero <= 0) {
       setErro("Preencha descrição e um valor maior que 0.");
@@ -55,20 +69,6 @@ export function ContaForm({ onSubmit, formData, isEditing }: Props) {
     if (!form.recorrente && !form.vencimento) {
       setErro("Para conta única, informe a data de vencimento.");
       return;
-    }
-
-    if (form.recorrente) {
-      if (!form.quantidade_parcelas || form.quantidade_parcelas < 1) {
-        setErro("Informe a quantidade de parcelas (mínimo 1).");
-        return;
-      }
-      if (
-        form.dia_vencimento &&
-        (form.dia_vencimento < 1 || form.dia_vencimento > 31)
-      ) {
-        setErro("O dia de vencimento deve estar entre 1 e 31.");
-        return;
-      }
     }
 
     const payload: Conta = {
