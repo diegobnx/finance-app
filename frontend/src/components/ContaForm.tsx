@@ -74,14 +74,8 @@ export function ContaForm({ onSubmit, formData, isEditing }: Props) {
     const payload: Conta = {
       ...form,
       valor: valorNumero,
-      quantidade_parcelas: form.recorrente
-        ? Number(form.quantidade_parcelas) || 1
-        : undefined,
-      dia_vencimento: form.recorrente
-        ? form.dia_vencimento
-          ? Number(form.dia_vencimento)
-          : undefined
-        : undefined,
+      quantidade_parcelas: parcelasNumero,
+      dia_vencimento: diaNumero,
       vencimento: form.recorrente ? undefined : form.vencimento,
     };
 
