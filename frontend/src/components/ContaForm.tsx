@@ -1,7 +1,6 @@
-import { useState, useEffect } from "react";
-import React from "react";
-import { Conta } from "../types/conta";
+import React, { useState, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
+import { Conta } from "../types/conta";
 
 interface Props {
   onSubmit: (data: Conta) => void;
@@ -21,34 +20,25 @@ export function ContaForm({ onSubmit, formData, isEditing }: Props) {
           status: "pendente",
           dia_vencimento: undefined,
           quantidade_parcelas: undefined,
-          id: uuidv4()
+          id: uuidv4(),
         }
   );
   const [erro, setErro] = useState<string | null>(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (isEditing && formData) {
       setForm(formData);
     }
-  }, [formData, isEditing]);
+  }, [isEditing, formData]);
 
-  const formatarMoeda = (valor: string) => {
-    const numerico = valor.replace(/\D/g, "");
-    const numero = (parseInt(numerico || "0", 10) / 100).toFixed(2);
-    return {
-      exibicao: new Intl.NumberFormat("pt-BR", {
-        style: "currency",
-        currency: "BRL",
-      }).format(Number(numero)),
-      valorNumerico: numero
-    };
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  // ----------------- handlers -----------------
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value, type, checked } = e.target;
-    setForm(prev => ({
+    setForm((prev) => ({
       ...prev,
-      [name]: type === "checkbox" ? checked : value
+      [name]: type === "checkbox" ? checked : value,
     }));
   };
 
@@ -56,7 +46,6 @@ export function ContaForm({ onSubmit, formData, isEditing }: Props) {
     e.preventDefault();
     setErro(null);
 
-    // ---- Validação básica ----
     const valorNumero = parseFloat(String(form.valor).replace(",", "."));
     if (!form.descricao.trim() || isNaN(valorNumero) || valorNumero <= 0) {
       setErro("Preencha descrição e um valor maior que 0.");
@@ -69,50 +58,44 @@ export function ContaForm({ onSubmit, formData, isEditing }: Props) {
     }
 
     if (form.recorrente) {
+      if (!form.quantidade_parcelas || form.quantidade_parcelas < 1) {
+        setErro("Informe a quantidade de parcelas (mínimo 1).");
+        return;
+      }
       if (
-        !form.quantidade_parcelas ||
-        form.quantidade_parcelas < 1 ||
-        !form.dia_vencimento ||
-        form.dia_vencimento < 1 ||
-        form.dia_vencimento > 31
+        form.dia_vencimento &&
+        (form.dia_vencimento < 1 || form.dia_vencimento > 31)
       ) {
-        setErro("Preencha número de parcelas e dia de vencimento (1‑31).");
+        setErro("O dia de vencimento deve estar entre 1 e 31.");
         return;
       }
     }
 
-    // ---- Montagem do payload ----
-    const contaParaEnviar: Conta = {
+    const payload: Conta = {
       ...form,
-      valor: valorNumero, // envia number, não string
+      valor: valorNumero,
       quantidade_parcelas: form.recorrente
         ? Number(form.quantidade_parcelas) || 1
         : undefined,
       dia_vencimento: form.recorrente
-        ? Number(form.dia_vencimento) || 1
+        ? form.dia_vencimento
+          ? Number(form.dia_vencimento)
+          : undefined
         : undefined,
       vencimento: form.recorrente ? undefined : form.vencimento,
     };
 
-    if (!isEditing) {
-      contaParaEnviar.id = uuidv4();
-    }
+    if (!isEditing) payload.id = uuidv4();
 
     try {
-      const resultado = await onSubmit(contaParaEnviar);
-      if (Array.isArray(resultado)) {
-        console.log("Contas adicionadas:", resultado);
-      } else {
-        console.log("Conta adicionada/atualizada:", resultado);
-      }
+      await onSubmit(payload);
     } catch (err) {
-      setErro("Falha ao salvar conta. Tente novamente.");
       console.error(err);
+      setErro("Falha ao salvar conta. Tente novamente.");
       return;
     }
 
-    setErro(null);
-    // ---- Reset do formulário ----
+    // reset
     setForm({
       descricao: "",
       valor: "0",
@@ -125,13 +108,19 @@ export function ContaForm({ onSubmit, formData, isEditing }: Props) {
     });
   };
 
+  // --------------- JSX ---------------
   return (
-    <form key={form.id || "novo"} onSubmit={handleSubmit} className="bg-white shadow p-4 rounded-md space-y-4">
+    <form
+      key={form.id || "novo"}
+      onSubmit={handleSubmit}
+      className="bg-white shadow p-4 rounded-md space-y-4"
+    >
       {erro && (
         <p className="text-red-600 bg-red-50 border border-red-300 rounded px-3 py-2">
           {erro}
         </p>
       )}
+
       <div>
         <label className="block font-medium">Descrição</label>
         <input
@@ -154,8 +143,10 @@ export function ContaForm({ onSubmit, formData, isEditing }: Props) {
             currency: "BRL",
           }).format(Number(form.valor || "0"))}
           onChange={(e) => {
-            const valorNumerico = e.target.value.replace(/\D/g, "");
-            const numero = (parseInt(valorNumerico || "0", 10) / 100).toFixed(2);
+            const numeros = e.target.value.replace(/\D/g, "");
+            const numero = (
+              parseInt(numeros || "0", 10) / 100
+            ).toFixed(2);
             setForm((prev) => ({ ...prev, valor: numero }));
           }}
           className="w-full border rounded px-3 py-2"
@@ -189,7 +180,9 @@ export function ContaForm({ onSubmit, formData, isEditing }: Props) {
 
       {form.recorrente && (
         <div>
-          <label className="block font-medium">Parcelas (número de meses)</label>
+          <label className="block font-medium">
+            Parcelas (número de meses)
+          </label>
           <input
             type="number"
             name="quantidade_parcelas"
@@ -199,7 +192,9 @@ export function ContaForm({ onSubmit, formData, isEditing }: Props) {
             min={1}
             required
           />
-          <label className="block font-medium">Dia fixo do vencimento (1 a 31)</label>
+          <label className="block font-medium">
+            Dia fixo do vencimento (1 a 31) — opcional
+          </label>
           <input
             type="number"
             name="dia_vencimento"
@@ -208,7 +203,6 @@ export function ContaForm({ onSubmit, formData, isEditing }: Props) {
             className="w-full border rounded px-3 py-2"
             min={1}
             max={31}
-            required
           />
         </div>
       )}
