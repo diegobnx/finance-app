@@ -18,7 +18,6 @@ export function ContaForm({ onSubmit, formData, isEditing }: Props) {
           valor: "0",
           vencimento: new Date().toISOString().split("T")[0],
           recorrente: false,
-          total_parcelas: undefined,
           status: "pendente",
           dia_vencimento: undefined,
           quantidade_parcelas: undefined,
@@ -69,8 +68,8 @@ export function ContaForm({ onSubmit, formData, isEditing }: Props) {
 
     if (form.recorrente) {
       if (
-        !form.total_parcelas ||
-        form.total_parcelas < 1 ||
+        !form.quantidade_parcelas ||
+        form.quantidade_parcelas < 1 ||
         !form.dia_vencimento ||
         form.dia_vencimento < 1 ||
         form.dia_vencimento > 31
@@ -83,11 +82,14 @@ export function ContaForm({ onSubmit, formData, isEditing }: Props) {
     // ---- Montagem do payload ----
     const contaParaEnviar: Conta = {
       ...form,
-      valor: valorNumero.toFixed(2),
-      quantidade_parcelas: form.recorrente ? Number(form.total_parcelas) || 1 : undefined,
-      dia_vencimento: form.recorrente ? Number(form.dia_vencimento) || 1 : undefined,
-      total_parcelas: form.recorrente ? Number(form.total_parcelas) || 1 : undefined,
-      vencimento: form.vencimento || new Date().toISOString().split("T")[0],
+      valor: valorNumero, // envia number, não string
+      quantidade_parcelas: form.recorrente
+        ? Number(form.quantidade_parcelas) || 1
+        : undefined,
+      dia_vencimento: form.recorrente
+        ? Number(form.dia_vencimento) || 1
+        : undefined,
+      vencimento: form.recorrente ? undefined : form.vencimento,
     };
 
     if (!isEditing) {
@@ -112,7 +114,6 @@ export function ContaForm({ onSubmit, formData, isEditing }: Props) {
       valor: "0",
       vencimento: new Date().toISOString().split("T")[0],
       recorrente: false,
-      total_parcelas: undefined,
       status: "pendente",
       dia_vencimento: undefined,
       quantidade_parcelas: undefined,
@@ -182,8 +183,8 @@ export function ContaForm({ onSubmit, formData, isEditing }: Props) {
           <label className="block font-medium">Parcelas (número de meses)</label>
           <input
             type="number"
-            name="total_parcelas"
-            value={form.total_parcelas || ""}
+            name="quantidade_parcelas"
+            value={form.quantidade_parcelas || ""}
             onChange={handleChange}
             className="w-full border rounded px-3 py-2"
             min={1}

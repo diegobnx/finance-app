@@ -1,10 +1,17 @@
-from sqlalchemy import Column, Integer, String, Boolean, Date, JSON, Float, Numeric
+from sqlalchemy import Column, Integer, String, Boolean, Date, Numeric
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.orm import declarative_base
 from uuid import uuid4
+from sqlalchemy import Enum as PgEnum
+from enum import Enum
 
 from app.core.db import Base
+
+class StatusEnum(str, Enum):
+    pendente = "pendente"
+    pago = "pago"
+    vencida = "vencida"
 
 class Conta(Base):
     """
@@ -20,12 +27,11 @@ class Conta(Base):
     recorrente = Column(Boolean, default=False)
     inicio_periodo = Column(Date, nullable=True)
     fim_periodo = Column(Date, nullable=True)
-    status = Column(String, default="pendente")
+    status = Column(PgEnum(StatusEnum, name="status_enum"), default=StatusEnum.pendente, nullable=False)
     dia_vencimento = Column(Integer, nullable=True)
     quantidade_parcelas = Column(Integer, nullable=True)
     numero_parcela = Column(Integer, nullable=True)
     total_parcelas = Column(Integer, nullable=True)
-    quantidade_parcelas = Column(Integer, nullable=True)
-    numero_parcela = Column(Integer, nullable=True)
-    total_parcelas = Column(Integer, nullable=True)
-    __repr__ = lambda self: f"<Conta {self.descricao}, Parcela {self.numero_parcela}/{self.total_parcelas}>"
+
+    def __repr__(self):
+        return f"<Conta {self.descricao} {self.numero_parcela or ''}/{self.total_parcelas or ''} - {self.status}>"

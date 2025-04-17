@@ -3,7 +3,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from typing import List, Union
 from app.core.db import get_db
-from app.models.conta import Conta
 from app.schemas.conta import ContaCreate, ContaResponseParcela
 from app.services.conta_service import listar_contas as listar, criar_conta as criar
 from app.services.conta_service import criar_conta_recorrente
@@ -18,8 +17,16 @@ async def listar_contas(db: AsyncSession = Depends(get_db)):
 @router.post("/", response_model=Union[ContaResponseParcela, List[ContaResponseParcela]])
 async def criar_conta(conta: ContaCreate, db: AsyncSession = Depends(get_db)):
     if conta.recorrente:
-        if not conta.quantidade_parcelas or not conta.vencimento:
-            raise HTTPException(status_code=400, detail="Campos 'quantidade_parcelas' e 'vencimento' são obrigatórios para contas recorrentes.")
+        if not conta.quantidade_parcelas:
+            raise HTTPException(
+                status_code=400,
+                detail="Campo 'quantidade_parcelas' é obrigatório para contas recorrentes."
+            )
+        if not (conta.vencimento or conta.dia_vencimento):
+            raise HTTPException(
+                status_code=400,
+                detail="Envie 'vencimento' ou 'dia_vencimento' para contas recorrentes."
+            )
         return await criar_conta_recorrente(db, conta)
     return await criar(db, conta)
 

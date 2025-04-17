@@ -19,6 +19,8 @@ export function ContaItem({ conta, onUpdate, onDelete, onEdit }: Props) {
     fim_periodo: "",
     status: "",
   });
+  // garante um identificador mesmo se vier como _id do backend
+  const idReal = (conta.id ?? (conta as any)._id) as string;
 
   const handleEdit = () => {
     setEditData({
@@ -57,7 +59,7 @@ export function ContaItem({ conta, onUpdate, onDelete, onEdit }: Props) {
     console.log("Enviando payload corrigido:", payload);
 
     try {
-      await onUpdate(conta.id, payload);
+      await onUpdate(idReal, payload);
       setShowEditModal(false); // fecha o modal somente após sucesso
     } catch (e) {
       console.error("Falha ao atualizar conta:", e);
@@ -96,7 +98,7 @@ export function ContaItem({ conta, onUpdate, onDelete, onEdit }: Props) {
         </p>
         <p
           className={`inline-block px-2 py-1 text-sm rounded ${
-            conta.status === "paga"
+            conta.status === "pago"
               ? "bg-green-100 text-green-800"
               : conta.status === "vencida"
               ? "bg-red-100 text-red-800"
@@ -109,12 +111,12 @@ export function ContaItem({ conta, onUpdate, onDelete, onEdit }: Props) {
       <div className="space-x-2 flex">
         <button
           className={`${
-            conta.status === "paga" ? "bg-yellow-500 hover:bg-yellow-600" : "bg-green-600 hover:bg-green-700"
+            conta.status === "pago" ? "bg-yellow-500 hover:bg-yellow-600" : "bg-green-600 hover:bg-green-700"
           } text-white px-3 py-1 rounded`}
           onClick={async () => {
-            const novoStatus = conta.status === "paga" ? "pendente" : "paga";
+            const novoStatus = conta.status === "pago" ? "pendente" : "pago";
             try {
-              await onUpdate(conta.id, {
+              await onUpdate(idReal, {
                 descricao: conta.descricao,
                 valor: conta.valor,
                 vencimento: conta.vencimento,
@@ -132,7 +134,7 @@ export function ContaItem({ conta, onUpdate, onDelete, onEdit }: Props) {
             }
           }}
         >
-          {conta.status === "paga" ? "Marcar como Pendente" : "Marcar como Pago"}
+          {conta.status === "pago" ? "Marcar como Pendente" : "Marcar como Pago"}
         </button>
         <button
           className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
@@ -142,7 +144,7 @@ export function ContaItem({ conta, onUpdate, onDelete, onEdit }: Props) {
         </button>
         <button
           className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
-          onClick={() => onDelete(conta.id)}
+          onClick={() => onDelete(idReal)}
         >
           Excluir
         </button>

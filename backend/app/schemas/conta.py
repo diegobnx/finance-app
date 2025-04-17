@@ -1,23 +1,28 @@
 from pydantic import BaseModel, validator, model_validator
 from typing import Optional
+from enum import Enum
 from datetime import date
+
+class StatusEnum(str, Enum):
+    pendente = "pendente"
+    pago = "pago"
+    vencida = "vencida"
 
 class ContaBase(BaseModel):
     descricao: str
     valor: float
     vencimento: Optional[date] = None
     recorrente: Optional[bool] = False
-    quantidade_parcelas: Optional[int] = None  # Usada apenas quando recorrente=True e inicio_periodo/fim_periodo não fornecidos
+    quantidade_parcelas: Optional[int] = None
     inicio_periodo: Optional[date] = None
     fim_periodo: Optional[date] = None
-    status: Optional[str] = "pendente"
+    status: StatusEnum = StatusEnum.pendente
     dia_vencimento: Optional[int] = None
     numero_parcela: Optional[int] = None
     total_parcelas: Optional[int] = None
 
     @validator("vencimento", "inicio_periodo", "fim_periodo", pre=True)
     def parse_date(cls, value):
-        print(f"🧪 Debug: Converting value '{value}' to date")
         if isinstance(value, str):
             return date.fromisoformat(value)
         return value
@@ -43,14 +48,16 @@ class ContaCreate(ContaBase):
     quantidade_parcelas: Optional[int] = None
     inicio_periodo: Optional[date] = None
     fim_periodo: Optional[date] = None
-    status: Optional[str] = "pendente"
+    status: StatusEnum = StatusEnum.pendente
     dia_vencimento: Optional[int] = None
 
     @model_validator(mode="after")
     def validate_recorrente_fields(cls, values):
         if values.recorrente:
-            if not values.vencimento or not values.quantidade_parcelas:
-                raise ValueError("Campos 'vencimento' e 'quantidade_parcelas' são obrigatórios para contas recorrentes.")
+            if not values.quantidade_parcelas:
+                raise ValueError("Campo 'quantidade_parcelas' é obrigatório para contas recorrentes.")
+            if not (values.vencimento or values.dia_vencimento):
+                raise ValueError("Envie 'vencimento' ou 'dia_vencimento' em contas recorrentes.")
         return values
 
 class ContaResponse(ContaBase):

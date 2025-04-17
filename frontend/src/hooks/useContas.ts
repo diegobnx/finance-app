@@ -15,6 +15,15 @@ function validarContaBasica(conta: Pick<Conta, "descricao" | "valor" | "recorren
   return null;
 }
 
+/**
+ * Converte o objeto bruto do backend (_id ou id) para o formato usado no frontend.
+ */
+function normalizeConta(raw: any): Conta {
+  return {
+    ...raw,
+    id: raw.id ?? raw._id, // garante sempre um id
+  };
+}
 
 export function useContas() {
   const [contas, setContas] = useState<Conta[]>([]);
@@ -28,8 +37,8 @@ export function useContas() {
     setError(null);
     setLoading(true);
     try {
-      const response = await axios.get<Conta[]>(`${BASE_URL}/contas`);
-      setContas(response.data);
+      const response = await axios.get<any[]>(`${BASE_URL}/contas`);
+      setContas(response.data.map(normalizeConta));
     } catch (err) {
       setError("Erro ao buscar contas.");
     } finally {
@@ -51,8 +60,9 @@ export function useContas() {
 
     setError(null);
     try {
-      const response = await axios.post<Conta>(`${BASE_URL}/contas`, novaConta);
-      setContas(prev => [...prev, response.data]);
+      const { data } = await axios.post<any | any[]>(`${BASE_URL}/contas`, novaConta);
+      const novas = Array.isArray(data) ? data : [data];
+      setContas(prev => [...prev, ...novas.map(normalizeConta)]);
     } catch {
       setError("Erro ao criar conta.");
     }
@@ -80,6 +90,10 @@ export function useContas() {
         inicio_periodo: conta.inicio_periodo || null,
         fim_periodo: conta.fim_periodo || null,
         status: conta.status,
+        quantidade_parcelas: conta.quantidade_parcelas ?? null,
+        dia_vencimento: conta.dia_vencimento ?? null,
+        numero_parcela: conta.numero_parcela ?? null,
+        total_parcelas: conta.total_parcelas ?? null,
       };
 
       const response = await axios.put<Conta>(`${BASE_URL}/contas/${id}`, payload);
@@ -90,7 +104,7 @@ export function useContas() {
   };
 
   const pagar = async (id: string) => {
-    const conta = contas.find(c => c.id === id);
+    const conta = contas.find(c => c.id === id || (c as any)._id === id);
     if (!conta) {
       setError("Conta não encontrada.");
       return;
