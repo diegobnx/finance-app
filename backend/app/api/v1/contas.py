@@ -23,11 +23,6 @@ async def criar_conta(conta: ContaCreate, db: AsyncSession = Depends(get_db)):
                 status_code=400,
                 detail="Campo 'quantidade_parcelas' é obrigatório para contas recorrentes."
             )
-        if not (conta.vencimento or conta.dia_vencimento):
-            raise HTTPException(
-                status_code=400,
-                detail="Envie 'vencimento' ou 'dia_vencimento' para contas recorrentes."
-            )
         return await criar_conta_recorrente(db, conta)
     return await criar(db, conta)
 
@@ -47,7 +42,8 @@ async def atualizar_conta(conta_id: str, conta: ContaCreate, db: AsyncSession = 
         raise HTTPException(status_code=404, detail="Conta não encontrada")
 
     for key, value in conta.dict().items():
-        setattr(db_conta, key, value)
+        if key not in ("id", "_id") and value is not None:
+            setattr(db_conta, key, value)
 
     await db.commit()
     await db.flush()
