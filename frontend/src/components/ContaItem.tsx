@@ -18,6 +18,7 @@ export function ContaItem({ conta, onUpdate, onDelete, onEdit }: Props) {
     inicio_periodo: "",
     fim_periodo: "",
     status: "",
+    dia_vencimento: undefined,
   });
   // garante um identificador mesmo se vier como _id do backend
   const idReal = (conta.id ?? (conta as any)._id) as string;
@@ -31,29 +32,38 @@ export function ContaItem({ conta, onUpdate, onDelete, onEdit }: Props) {
       inicio_periodo: conta.inicio_periodo,
       fim_periodo: conta.fim_periodo,
       status: conta.status,
+      dia_vencimento: conta.dia_vencimento,
     });
     setShowEditModal(true);
     if (onEdit) onEdit(conta);
   };
 
   const handleSave = async () => {
-    if (
-      !editData.descricao ||
-      (editData.recorrente === false && !editData.vencimento) ||
-      Number(editData.valor.replace(",", ".")) <= 0
-    ) {
+    const valorFloat = parseFloat(editData.valor.replace(",", "."));
+
+    if (!editData.descricao || isNaN(valorFloat) || valorFloat <= 0) {
       console.error("Dados inválidos:", editData);
+      return;
+    }
+
+    if (!editData.recorrente && !editData.vencimento) {
+      console.error("Data de vencimento obrigatória para contas não recorrentes");
       return;
     }
 
     const payload: ContaCreate = {
       descricao: editData.descricao.trim(),
       valor: parseFloat(editData.valor.replace(/\./g, "").replace(",", ".")),
-      vencimento: new Date(editData.vencimento).toISOString().split("T")[0],
+      vencimento: editData.recorrente
+        ? new Date().toISOString().split("T")[0]
+        : new Date(editData.vencimento).toISOString().split("T")[0],
       recorrente: editData.recorrente,
       status: editData.status || "pendente",
       inicio_periodo: editData.inicio_periodo ?? "",
       fim_periodo: editData.fim_periodo ?? "",
+      dia_vencimento: editData.recorrente
+        ? editData.dia_vencimento ?? undefined
+        : undefined,
     };
 
     console.log("Enviando payload corrigido:", payload);
@@ -76,6 +86,7 @@ export function ContaItem({ conta, onUpdate, onDelete, onEdit }: Props) {
         inicio_periodo: conta.inicio_periodo,
         fim_periodo: conta.fim_periodo,
         status: conta.status,
+        dia_vencimento: conta.dia_vencimento,
       });
     }
   }, [showEditModal, conta]);
@@ -172,12 +183,31 @@ export function ContaItem({ conta, onUpdate, onDelete, onEdit }: Props) {
               placeholder="Valor"
               className="border p-2 w-full mb-2"
             />
-            <input
-              type="date"
-              value={editData.vencimento}
-              onChange={(e) => setEditData({ ...editData, vencimento: e.target.value })}
-              className="border p-2 w-full mb-2"
-            />
+            {editData.recorrente ? (
+              <input
+                type="number"
+                min={1}
+                max={31}
+                value={editData.dia_vencimento || ""}
+                onChange={(e) =>
+                  setEditData({
+                    ...editData,
+                    dia_vencimento: Number(e.target.value),
+                  })
+                }
+                placeholder="Dia de vencimento (1-31)"
+                className="border p-2 w-full mb-2"
+              />
+            ) : (
+              <input
+                type="date"
+                value={editData.vencimento}
+                onChange={(e) =>
+                  setEditData({ ...editData, vencimento: e.target.value })
+                }
+                className="border p-2 w-full mb-2"
+              />
+            )}
             <div className="flex justify-end">
               <button
                 onClick={handleSave}
