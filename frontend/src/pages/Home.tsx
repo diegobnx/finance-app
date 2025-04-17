@@ -9,16 +9,26 @@ export default function Home() {
   const [contaEditando, setContaEditando] = useState<Conta | null>(null);
 
   const handleSubmit = async (dados: Conta) => {
-    if (!dados.descricao || !dados.valor || !dados.vencimento || !dados.status) {
+    if (
+      !dados.descricao ||
+      !dados.valor ||
+      Number(dados.valor) <= 0 ||
+      !dados.vencimento ||
+      !dados.status
+    ) {
       console.error("Dados inválidos:", dados);
       return;
     }
 
-    if (contaEditando && contaEditando.id === dados.id) {
-      atualizar(contaEditando.id, dados);
-    } else {
-      await criar(dados);
-      setContaEditando(null);
+    try {
+      if (contaEditando?.id === dados.id) {
+        await atualizar(contaEditando.id, dados);
+      } else {
+        await criar(dados);
+      }
+      setContaEditando(null); // sempre sair do modo edição após salvar
+    } catch (e) {
+      console.error("Falha ao salvar conta:", e);
     }
   };
 
@@ -43,26 +53,27 @@ export default function Home() {
       {error && <p className="text-red-500">{error}</p>}
 
       <div className="mt-6 space-y-4">
-        {contas.map((conta) => (
-          <ContaItem
-            key={conta.id}
-            conta={conta}
-            onUpdate={atualizar}
-            onDelete={deletar}
-            onEdit={() => handleEdit(conta)}
-            onMarkAsPaid={() =>
-              atualizar(conta.id, {
-                ...conta,
-                status: conta.status === "pago" ? "pendente" : "pago",
-              })
-            }
-            buttonText={
-              conta.status === "pago"
-                ? "Marcar como pendente"
-                : "Marcar como pago"
-            }
-          />
-        ))}
+        {!loading &&
+          contas?.map((conta) => (
+            <ContaItem
+              key={conta.id}
+              conta={conta}
+              onUpdate={atualizar}
+              onDelete={deletar}
+              onEdit={() => handleEdit(conta)}
+              onMarkAsPaid={() =>
+                atualizar(conta.id, {
+                  ...conta,
+                  status: conta.status === "pago" ? "pendente" : "pago",
+                })
+              }
+              buttonText={
+                conta.status === "pago"
+                  ? "Marcar como pendente"
+                  : "Marcar como pago"
+              }
+            />
+          ))}
       </div>
     </div>
   );

@@ -34,13 +34,15 @@ export function ContaItem({ conta, onUpdate, onDelete, onEdit }: Props) {
     if (onEdit) onEdit(conta);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (
       !editData.descricao ||
       (editData.recorrente === false && !editData.vencimento) ||
       Number(editData.valor.replace(",", ".")) <= 0
-    )
+    ) {
+      console.error("Dados inválidos:", editData);
       return;
+    }
 
     const payload: ContaCreate = {
       descricao: editData.descricao.trim(),
@@ -54,8 +56,12 @@ export function ContaItem({ conta, onUpdate, onDelete, onEdit }: Props) {
 
     console.log("Enviando payload corrigido:", payload);
 
-    onUpdate(conta.id, payload);
-    setShowEditModal(false);
+    try {
+      await onUpdate(conta.id, payload);
+      setShowEditModal(false); // fecha o modal somente após sucesso
+    } catch (e) {
+      console.error("Falha ao atualizar conta:", e);
+    }
   };
 
   useEffect(() => {
@@ -105,21 +111,25 @@ export function ContaItem({ conta, onUpdate, onDelete, onEdit }: Props) {
           className={`${
             conta.status === "paga" ? "bg-yellow-500 hover:bg-yellow-600" : "bg-green-600 hover:bg-green-700"
           } text-white px-3 py-1 rounded`}
-          onClick={() => {
+          onClick={async () => {
             const novoStatus = conta.status === "paga" ? "pendente" : "paga";
-            onUpdate(conta.id, {
-              descricao: conta.descricao,
-              valor: conta.valor,
-              vencimento: conta.vencimento,
-              recorrente: conta.recorrente,
-              inicio_periodo: conta.inicio_periodo ?? "",
-              fim_periodo: conta.fim_periodo ?? "",
-              status: novoStatus,
-              quantidade_parcelas: conta.quantidade_parcelas ?? undefined,
-              numero_parcela: conta.numero_parcela ?? undefined,
-              total_parcelas: conta.total_parcelas ?? undefined,
-              dia_vencimento: conta.dia_vencimento ?? undefined,
-            });
+            try {
+              await onUpdate(conta.id, {
+                descricao: conta.descricao,
+                valor: conta.valor,
+                vencimento: conta.vencimento,
+                recorrente: conta.recorrente,
+                inicio_periodo: conta.inicio_periodo ?? "",
+                fim_periodo: conta.fim_periodo ?? "",
+                status: novoStatus,
+                quantidade_parcelas: conta.quantidade_parcelas ?? undefined,
+                numero_parcela: conta.numero_parcela ?? undefined,
+                total_parcelas: conta.total_parcelas ?? undefined,
+                dia_vencimento: conta.dia_vencimento ?? undefined,
+              });
+            } catch (e) {
+              console.error("Falha ao atualizar status da conta:", e);
+            }
           }}
         >
           {conta.status === "paga" ? "Marcar como Pendente" : "Marcar como Pago"}
