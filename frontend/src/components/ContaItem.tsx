@@ -54,9 +54,10 @@ export function ContaItem({ conta, onUpdate, onDelete, onEdit }: Props) {
     const payload: ContaCreate = {
       descricao: editData.descricao.trim(),
       valor: parseFloat(editData.valor.replace(/\./g, "").replace(",", ".")),
-      vencimento: editData.recorrente
-        ? new Date().toISOString().split("T")[0]
-        : new Date(editData.vencimento).toISOString().split("T")[0],
+      vencimento:
+        editData.recorrente && editData.dia_vencimento
+          ? new Date(new Date().getFullYear(), new Date().getMonth(), editData.dia_vencimento).toISOString().split("T")[0]
+          : new Date(editData.vencimento).toISOString().split("T")[0],
       recorrente: editData.recorrente,
       status: editData.status || "pendente",
       inicio_periodo: editData.inicio_periodo ?? "",
