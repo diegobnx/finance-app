@@ -3,10 +3,12 @@ from typing import Optional
 from enum import Enum
 from datetime import date
 
+
 class StatusEnum(str, Enum):
     pendente = "pendente"
     pago = "pago"
     vencida = "vencida"
+
 
 class ContaBase(BaseModel):
     descricao: str
@@ -40,6 +42,7 @@ class ContaBase(BaseModel):
                 raise ValueError("A quantidade de parcelas deve ser maior que zero.")
         return value
 
+
 class ContaCreate(ContaBase):
     descricao: str
     valor: float
@@ -55,10 +58,29 @@ class ContaCreate(ContaBase):
     def validate_recorrente_fields(cls, values):
         if values.recorrente:
             if not values.quantidade_parcelas:
-                raise ValueError("Campo 'quantidade_parcelas' é obrigatório para contas recorrentes.")
+                raise ValueError(
+                    "Campo 'quantidade_parcelas' é obrigatório para contas recorrentes."
+                )
             if not (values.vencimento or values.dia_vencimento):
-                raise ValueError("Envie 'vencimento' ou 'dia_vencimento' em contas recorrentes.")
+                raise ValueError(
+                    "Envie 'vencimento' ou 'dia_vencimento' em contas recorrentes."
+                )
         return values
+
+
+class ContaUpdate(BaseModel):
+    descricao: Optional[str] = None
+    valor: Optional[float] = None
+    vencimento: Optional[date] = None
+    recorrente: Optional[bool] = None
+    quantidade_parcelas: Optional[int] = None
+    inicio_periodo: Optional[date] = None
+    fim_periodo: Optional[date] = None
+    status: Optional[StatusEnum] = None
+    dia_vencimento: Optional[int] = None
+    numero_parcela: Optional[int] = None
+    total_parcelas: Optional[int] = None
+
 
 class ContaResponse(ContaBase):
     id: str
@@ -67,6 +89,7 @@ class ContaResponse(ContaBase):
 
     class Config:
         from_attributes = True
+
 
 class ContaResponseParcela(ContaResponse):
     pass

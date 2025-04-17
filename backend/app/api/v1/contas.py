@@ -4,7 +4,7 @@ from sqlalchemy.future import select
 from app.models.conta import Conta
 from typing import List, Union
 from app.core.db import get_db
-from app.schemas.conta import ContaCreate, ContaResponseParcela
+from app.schemas.conta import ContaCreate, ContaUpdate, ContaResponseParcela
 from app.services.conta_service import listar_contas as listar, criar_conta as criar
 from app.services.conta_service import criar_conta_recorrente
 
@@ -35,7 +35,7 @@ async def obter_conta(conta_id: str, db: AsyncSession = Depends(get_db)):
     return conta
 
 @router.put("/{conta_id}", response_model=ContaResponseParcela)
-async def atualizar_conta(conta_id: str, conta: ContaCreate, db: AsyncSession = Depends(get_db)):
+async def atualizar_conta(conta_id: str, conta: ContaUpdate, db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(Conta).where(Conta.id == conta_id))
     db_conta = result.scalars().first()
     if not db_conta:
