@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+from app.models.conta import Conta
 from typing import List, Union
 from app.core.db import get_db
 from app.schemas.conta import ContaCreate, ContaResponseParcela

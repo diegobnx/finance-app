@@ -24,6 +24,7 @@ export function ContaForm({ onSubmit, formData, isEditing }: Props) {
           id: uuidv4()
         }
   );
+  const [erro, setErro] = useState<string | null>(null);
 
   React.useEffect(() => {
     if (isEditing && formData) {
@@ -53,16 +54,17 @@ export function ContaForm({ onSubmit, formData, isEditing }: Props) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErro(null);
 
     // ---- Validação básica ----
-    const valorNumero = Number(form.valor);
+    const valorNumero = parseFloat(String(form.valor).replace(",", "."));
     if (!form.descricao.trim() || isNaN(valorNumero) || valorNumero <= 0) {
-      console.error("Dados inválidos (descrição/valor):", form);
+      setErro("Preencha descrição e um valor maior que 0.");
       return;
     }
 
     if (!form.recorrente && !form.vencimento) {
-      console.error("Data de vencimento obrigatória para contas não recorrentes");
+      setErro("Para conta única, informe a data de vencimento.");
       return;
     }
 
@@ -74,7 +76,7 @@ export function ContaForm({ onSubmit, formData, isEditing }: Props) {
         form.dia_vencimento < 1 ||
         form.dia_vencimento > 31
       ) {
-        console.error("Dados de recorrência inválidos", form);
+        setErro("Preencha número de parcelas e dia de vencimento (1‑31).");
         return;
       }
     }
@@ -104,10 +106,12 @@ export function ContaForm({ onSubmit, formData, isEditing }: Props) {
         console.log("Conta adicionada/atualizada:", resultado);
       }
     } catch (err) {
-      console.error("Falha ao submeter conta:", err);
+      setErro("Falha ao salvar conta. Tente novamente.");
+      console.error(err);
       return;
     }
 
+    setErro(null);
     // ---- Reset do formulário ----
     setForm({
       descricao: "",
@@ -123,6 +127,11 @@ export function ContaForm({ onSubmit, formData, isEditing }: Props) {
 
   return (
     <form key={form.id || "novo"} onSubmit={handleSubmit} className="bg-white shadow p-4 rounded-md space-y-4">
+      {erro && (
+        <p className="text-red-600 bg-red-50 border border-red-300 rounded px-3 py-2">
+          {erro}
+        </p>
+      )}
       <div>
         <label className="block font-medium">Descrição</label>
         <input
